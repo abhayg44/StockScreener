@@ -1,21 +1,24 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 
 function Navbar() {
   return (
-    <nav className="navbar">
-      <div className="navbar-logo">Stock Screener</div>
+    <div className="navbar">
+      <nav className="navbar-logo">
+        <Link to="/">Stock Screener</Link>
+      </nav>
       <input
         className="navbar-search"
         type="text"
         placeholder="Search stocks..."
       />
-      <ul className="navbar-links">
-        <li>Home</li>
-        <li>Watchlist</li>
-        <li>Profile</li>
-      </ul>
-    </nav>
+      <nav className="navbar-links">
+        <Link to="/">Home</Link>
+        <Link to="/watchlist">Watchlist</Link>
+        <Link to="/register">Register</Link>
+      </nav>
+    </div>
   );
 }
 

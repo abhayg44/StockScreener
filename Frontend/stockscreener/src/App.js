@@ -1,13 +1,14 @@
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
-import StockList from "./components/StockList";
+import AppRoutes from "./routes/AppRouter";
 
 function App() {
   return (
-    <div className="App">
+    <BrowserRouter>
       <Navbar />
-      <StockList />
-    </div>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
 
