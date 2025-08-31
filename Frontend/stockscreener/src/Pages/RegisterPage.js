@@ -1,11 +1,6 @@
 import { useState } from "react";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { app } from "../services/Firebase";
+import axios from "axios";
 import "./RegisterPage.css";
 
 function RegisterPage() {
@@ -16,20 +11,22 @@ function RegisterPage() {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  const auth = getAuth(app);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const res = await axios.post("http://localhost:5000/users/login", {
+        email,
+        password,
+      });
+      console.log(res.data);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      console.log(localStorage.getItem("user"));
       navigate("/");
     } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        setError("User not found. Please sign up");
-      } else {
-        setError(err.message);
-      }
+      console.log(err.response);
+      setError(err.response.data.message || err.message);
     }
   };
 
@@ -37,16 +34,16 @@ function RegisterPage() {
     e.preventDefault();
     setError("");
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const res = await axios.post("http://localhost:5000/users/signup", {
+        name: name,
+        email: email,
+        password: password,
+      });
+      console.log(res.data);
+      localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        setError("Email already in use. Please login.");
-      } else if (err.code === "auth/invalid-credentials") {
-        setError("Invalid credentials. Please try again.");
-      } else {
-        setError(err.message);
-      }
+      setError(err.response.data.message || err.message);
     }
   };
 
