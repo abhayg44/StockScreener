@@ -18,17 +18,15 @@
 }
 
 .navbar-links {
-  list-style: none;
   display: flex;
-  gap: 30px;
-  margin: 0;
-  padding: 0;
+  align-items: center;
+  gap: 32px;
 }
 
 .navbar-links a {
   color: #fff;
   text-decoration: none;
-  margin: 0 12px;
+  margin: 0;
   font-weight: 500;
   transition: color 0.2s;
 }

@@ -2,8 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
-function Navbar() {
-  const user = JSON.parse(localStorage.getItem("user"));
+function Navbar({ user }) {
   return (
     <div className="navbar">
       <nav className="navbar-logo">
@@ -15,16 +14,17 @@ function Navbar() {
         placeholder="Search stocks..."
       />
       <nav className="navbar-links">
-        <Link to="/">Home</Link>
-        {user && (
-          <div>
+        <Link to="/" className="navbar-links-home">
+          Home
+        </Link>
+        {user ? (
+          <div className="navbar-links">
             <Link to="/watchlist">Watchlist</Link>
-            <Link to="/profile" user={user}>
-              Profile
-            </Link>
+            <Link to="/profile">Profile</Link>
           </div>
+        ) : (
+          <Link to="/register">Register</Link>
         )}
-        <Link to="/register">Register</Link>
       </nav>
     </div>
   );

@@ -1,11 +1,10 @@
 const express = require("express");
 const { signup, login } = require("../controller/AuthController");
-const errorHandler = require("../middleware/ErrorHandler");
+const RegisterLimiter = require("../middleware/RateLimiter");
 const router = express.Router();
 const app = express();
 
-router.post("/signup", signup);
-router.post("/login", login);
-app.use(errorHandler);
+router.post("/signup", RegisterLimiter, signup);
+router.post("/login", RegisterLimiter, login);
 
 module.exports = router;

@@ -2,7 +2,7 @@ const pool = require("../config/DbConfig");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
-const errorHandler = require("../middleware/ErrorHandler");
+const express = require("express");
 
 const signup = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;

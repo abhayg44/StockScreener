@@ -1,15 +1,21 @@
-const errorHandler = (err, req, res, next) => {
-  console.error(err.stack);
-  switch (err.code) {
-    case "23505": // Unique violation (e.g., duplicate email)
-      res.status(400).json({ message: "Email already in use" });
+const express = require("express");
+
+const ErrorHandler = (err, req, res, next) => {
+  const statusCode = res.statusCode;
+  switch (statusCode) {
+    case 400:
+      res.json({ message: err.message, stackTrace: err.stack });
       break;
-    case "23503": // Foreign key violation
-      res.status(400).json({ message: "Invalid reference" });
+    case 401:
+      res.json({ message: err.message, stackTrace: err.stack });
       break;
-    default:
-      res.status(500).json({ message: "Server error" });
+    case 404:
+      res.json({ message: err.message, stackTrace: err.stack });
+      break;
+    case 500:
+      res.json({ message: err.message, stackTrace: err.stack });
+      break;
   }
 };
 
-module.exports = errorHandler;
+module.exports = ErrorHandler;
