@@ -1,0 +1,39 @@
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Jupyter Notebook checkpoints (if you ever use notebooks)
+.ipynb_checkpoints/
+
+# VSCode / IDE settings
+.vscode/
+.idea/
+
+# OS-specific stuff
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Data files (don’t push big CSVs / downloads)
+*.csv
+*.xlsx
+*.parquet
+
+# Environment / credentials
+*.env
+.env*
+config.json
+secrets.json
+
+# Docker stuff (if you containerize later, you might keep docker-compose.yml, but ignore volumes)
+*/__pycache__/
