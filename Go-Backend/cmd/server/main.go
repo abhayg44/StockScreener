@@ -6,23 +6,30 @@ import (
 
 	"github.com/STOCKSCREENER/Go-Backend/internal/api"
 	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
+	"github.com/robfig/cron"
 )
 func main() {	
 	config := configs.GetConfig()
 	fmt.Println("configs are ", config)
 	router := http.NewServeMux()
-	// c := cron.New()
-	// // every day at 8:00 AM
-	// _, err := c.AddFunc("0 8 * * *", api.RunStockScreenerService)
-	// if err != nil {
-	// 	log.Fatal("failed to schedule stock screener:", err)
-	// }
-	// c.Start()
-	fmt.Println("sending data to rabbitmq")
-	api.RunStockScreenerService()
 
-	router.HandleFunc("/stocks/?Frequency=", api.GetStockHandler)
-	router.HandleFunc("/stocks", api.PostStockHandler)
+	// every day at 8:00 AM
+	c := cron.New()
+	err := c.AddFunc("0 * * * *", func() {
+		if err := api.RunStockScreenerService(); err != nil {
+			fmt.Println("Error running stock screener service: ", err)
+		}
+	})
+	if err != nil {
+		panic(fmt.Sprintf("failed to schedule stock screener: %v", err))
+	}
+	c.Start()
+
+	//stock api's
+	router.HandleFunc("POST /stock/refresh-stock-data", api.RefreshCurrentStockData)
+
+
+
 	srv := &http.Server{
 		Addr:    config.Addr,
 		Handler: router,
