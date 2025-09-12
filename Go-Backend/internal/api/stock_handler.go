@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
 	"github.com/STOCKSCREENER/Go-Backend/internal/models"
 	"github.com/streadway/amqp"
 )
@@ -16,9 +17,10 @@ func failOnError(err error, msg string) error{
 }
 
 var Cur_Stock_Data models.StockData
+var amqpURL = configs.GetConfig().AmqpURL
 
 func RunStockScreenerService() error{
-	conn,err:=amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn,err:=amqp.Dial(amqpURL)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 	ch,err:=conn.Channel()

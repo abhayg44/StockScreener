@@ -9,21 +9,26 @@ function RegisterPage(props) {
   const [error, setError] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [name, setName] = useState("");
+  const [unauthorized, setUnauthorized] = useState(true);
   const navigate = useNavigate();
 
+  const loginURL = process.env.REACT_APP_NODE_LOGIN_URL;
+  const signupURL = process.env.REACT_APP_NODE_SIGNUP_URL;
+  console.log("login url is ", loginURL);
+  console.log("signup url is ", signupURL);
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/users/login", {
+      const res = await axios.post(loginURL, {
         email,
         password,
       });
-
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       props.setUser(res.data.user);
-      navigate("/");
+      setUnauthorized(false);
+      navigate("/", { state: { unauthorized: false } });
     } catch (err) {
       console.log(err.response);
       setError(err.response.data.message || err.message);
@@ -34,7 +39,7 @@ function RegisterPage(props) {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/users/signup", {
+      const res = await axios.post(signupURL, {
         name: name,
         email: email,
         password: password,
@@ -42,7 +47,8 @@ function RegisterPage(props) {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       props.setUser(res.data.user);
-      navigate("/");
+      setUnauthorized(false);
+      navigate("/", { state: { unauthorized: false } });
     } catch (err) {
       setError(err.response.data.message || err.message);
     }

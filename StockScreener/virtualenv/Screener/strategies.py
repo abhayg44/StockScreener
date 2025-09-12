@@ -3,19 +3,19 @@ import talib as ta
 import numpy as np
 
 def ma50_score_calculator(data,ma_period=14,ma_short=50,ma_long=200):
-  close_price=data["Close"].dropna()
-  if len(close_price)<ma_long:
+  close_data=data["Close"].dropna()
+  if len(close_data)<ma_long:
     return {
       "final_ma50_score": 0.0,
-      "close": float(close_price.iloc[-1]) if len(close_price) > 0 else None,
+      "close": float(close_data.iloc[-1]) if len(close_data) > 0 else None,
     }
-  ma50_series=close_price.rolling(ma_short).mean().tail(ma_short)    
-  ma200_series=close_price.rolling(ma_long).mean().tail(ma_long)
+  ma50_series=close_data.rolling(ma_short).mean().tail(ma_short)    
+  ma200_series=close_data.rolling(ma_long).mean().tail(ma_long)
     
   ma50=ma50_series.iloc[-1]
   ma50_5ago=ma50_series.iloc[-5] if len(ma50_series) >= 5 else ma50_series.iloc[0]
   ma200=ma200_series.iloc[-1]
-  close=close_price.iloc[-1]
+  close=close_data.iloc[-1]
     
     #Distance from MA50, shows how overall trend is 
   dist=(close-ma50)/ma50
@@ -33,7 +33,9 @@ def ma50_score_calculator(data,ma_period=14,ma_short=50,ma_long=200):
   final_ma_50_score=float(round(max(-1,min(1,score)),3))
   final_ma50_data={
     "final_ma50_score":final_ma_50_score,
-    "close":round(float(close_price.iloc[-1]),2),
+    "close":round(float(close_data.iloc[-1]),2),
+    "change":round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None,
+    "pct_change":round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None,
   }
   return final_ma50_data
 
@@ -51,6 +53,8 @@ def rsi_score_momentum(data,rsi_period=14,lookback=20):
   final_rsi_data={
     "final_rsi_score":final_rsi_score,
     "close":round(float(close_data.iloc[-1]),2),
+    "change":round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None,
+    "pct_change":round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None
   }
   return final_rsi_data
 
@@ -78,6 +82,8 @@ def volume_score(data,lookback=20,slope_lookback=5):
   final_volume_data={
     "final_volume_score":final_volume_score,
     "close":round(float(close_data.iloc[-1]),2),
+    "change":round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None,
+    "pct_change":round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None
   }
   return final_volume_data
 
@@ -96,6 +102,8 @@ def final_screener(data,yf_tickers,company_name_dict):
     result['score']=float(round(((result['ma50_score'])*0.5+(result["rsi_score"])*0.3+(result["vol_score"])*0.2)/3, 3))
     result['close']=round(float(close_volume_data["Close"].iloc[-1]),2)
     result['name']=company_name_dict[ticker]
+    result["change"]=round(float(close_volume_data["Close"].iloc[-1]-close_volume_data["Close"].iloc[-2]),2) if len(close_volume_data) > 1 else None
+    result["pct_change"]=round(float((close_volume_data["Close"].iloc[-1]-close_volume_data["Close"].iloc[-2])/close_volume_data["Close"].iloc[-2]*100),2) if len(close_volume_data) > 1 else None
     results.append(result)
     
   scanner_df=pd.DataFrame(results)

@@ -1,8 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
-function Navbar({ user }) {
+function Navbar() {
+  const [unauthorized, setUnauthorized] = React.useState(
+    localStorage.getItem("token") ? false : true
+  );
+  var token = localStorage.getItem("token");
+  useEffect(() => {
+    token = localStorage.getItem("token");
+    if (token) {
+      setUnauthorized(false);
+    } else {
+      setUnauthorized(true);
+    }
+  }, [token]);
   return (
     <div className="navbar">
       <nav className="navbar-logo">
@@ -17,7 +29,7 @@ function Navbar({ user }) {
         <Link to="/" className="navbar-links-home">
           Home
         </Link>
-        {user ? (
+        {!unauthorized ? (
           <div className="navbar-links">
             <Link to="/watchlist">Watchlist</Link>
             <Link to="/profile">Profile</Link>

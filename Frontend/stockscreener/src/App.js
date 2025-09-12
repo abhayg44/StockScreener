@@ -7,14 +7,29 @@ import AppRoutes from "./routes/AppRouter";
 function App() {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const token = localStorage.getItem("token");
+    console.log(process.env.REACT_APP_NODE_TOKEN_VALIDATE_URL);
+    if (token) {
+      fetch(process.env.REACT_APP_NODE_TOKEN_VALIDATE_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (res.status === 401) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "/login";
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        });
     }
   }, []);
   return (
     <BrowserRouter>
-      <Navbar user={user} />
+      <Navbar />
       <AppRoutes setUser={setUser} />
     </BrowserRouter>
   );

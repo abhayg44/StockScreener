@@ -13,9 +13,9 @@ func main() {
 	fmt.Println("configs are ", config)
 	router := http.NewServeMux()
 
-	// every day at 8:00 AM
+	// every hour cron expression
 	c := cron.New()
-	err := c.AddFunc("0 * * * *", func() {
+	err := c.AddFunc("0 0 * * *", func() {
 		if err := api.RunStockScreenerService(); err != nil {
 			fmt.Println("Error running stock screener service: ", err)
 		}

@@ -12,6 +12,7 @@ type Config struct {
 	GoStockServiceURL string
 	NodeURL   string
 	MongoURL  string
+	AmqpURL   string
 }
 
 var(
@@ -28,6 +29,7 @@ func loadConfig(){
 		GoStockServiceURL: os.Getenv("GO_STOCK_SERVICE_URL"),
 		NodeURL:   os.Getenv("NODE_URL"),
 		MongoURL: os.Getenv("MONGO_URL"),
+		AmqpURL: os.Getenv("AMQP_URL"),
 	}
 }
 
