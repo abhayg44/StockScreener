@@ -1,6 +1,35 @@
 import pandas as pd
 import talib as ta
 import numpy as np
+import yfinance as yf
+from io import StringIO
+from datetime import datetime, timedelta
+import requests
+
+
+def fetch_data():
+  print("this is nifty fifty data -----------------------------------------")
+  url = "https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv"
+
+  headers = {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.5",
+      "Connection": "keep-alive"
+  }
+
+  resp = requests.get(url, headers=headers, timeout=20)  #get the data from the URL
+  resp.raise_for_status()
+
+  df = pd.read_csv(StringIO(resp.text))  #convert the string values to CSV 
+  company_names = df[['Company Name','Symbol']]
+  yf_tickers = df['Symbol'].apply(lambda x: x + ".NS").tolist()  #append .NS to each ticker
+
+  start_date=datetime.now() - timedelta(days=365)
+  end_date=datetime.now()
+
+  data=yf.download(yf_tickers, start=start_date, end=end_date, group_by="ticker")  #download the historical data for the tickers
+  return data, yf_tickers, company_names
 
 def ma50_score_calculator(data,ma_period=14,ma_short=50,ma_long=200):
   close_data=data["Close"].dropna()

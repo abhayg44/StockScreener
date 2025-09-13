@@ -7,29 +7,7 @@ import talib as ta
 import numpy as np
 from Screener.strategies import ma50_score_calculator, rsi_score_momentum, volume_score, final_screener
 
-def fetch_data():
-  print("this is complete run -----------------------------------------")
-  url = "https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv"
 
-  headers = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Connection": "keep-alive"
-  }
-
-  resp = requests.get(url, headers=headers, timeout=20)  #get the data from the URL
-  resp.raise_for_status()
-
-  df = pd.read_csv(StringIO(resp.text))  #convert the string values to CSV 
-  company_names = df[['Company Name','Symbol']]
-  yf_tickers = df['Symbol'].apply(lambda x: x + ".NS").tolist()  #append .NS to each ticker
-
-  start_date=datetime.now() - timedelta(days=365)
-  end_date=datetime.now()
-
-  data=yf.download(yf_tickers, start=start_date, end=end_date, group_by="ticker")  #download the historical data for the tickers
-  return data, yf_tickers, company_names
 
 def company_ticker_to_name(yf_tickers,company_names):
   return {ticker: company_names[company_names['Symbol']==ticker.replace('.NS','')]['Company Name'].values[0] for ticker in yf_tickers}

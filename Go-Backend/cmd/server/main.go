@@ -12,11 +12,10 @@ func main() {
 	config := configs.GetConfig()
 	fmt.Println("configs are ", config)
 	router := http.NewServeMux()
-
 	// every hour cron expression
 	c := cron.New()
 	err := c.AddFunc("0 0 * * *", func() {
-		if err := api.RunStockScreenerService(); err != nil {
+		if err := api.RefreshCurrentStockDataJob(); err != nil {
 			fmt.Println("Error running stock screener service: ", err)
 		}
 	})
@@ -26,9 +25,7 @@ func main() {
 	c.Start()
 
 	//stock api's
-	router.HandleFunc("POST /stock/refresh-stock-data", api.RefreshCurrentStockData)
-
-
+	router.HandleFunc("POST /stock/refresh-stock-data", api.RefreshCurrentStockDataHandler)
 
 	srv := &http.Server{
 		Addr:    config.Addr,
