@@ -16,7 +16,7 @@ func main() {
 	// every hour cron expression
 	c := cron.New()
 	err := c.AddFunc("0 0 * * *", func() {
-		if err := api.RunStockScreenerService(); err != nil {
+		if err := api.RefreshCurrentStockDataJob(); err != nil {
 			fmt.Println("Error running stock screener service: ", err)
 		}
 	})

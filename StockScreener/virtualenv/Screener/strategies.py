@@ -96,7 +96,7 @@ def final_screener(data,yf_tickers,company_name_dict):
       'Ticker':ticker,
       'ma50_score':(ma50_score_calculator(close_volume_data))["final_ma50_score"],
       'rsi_score':(rsi_score_momentum(close_volume_data))["final_rsi_score"],
-      'vol_score':(volume_score(close_volume_data))["final_volume_score"]
+      'vol_score':(volume_score(close_volume_data))["final_volume_score"],
     }
 
     result['score']=float(round(((result['ma50_score'])*0.5+(result["rsi_score"])*0.3+(result["vol_score"])*0.2)/3, 3))
@@ -108,8 +108,8 @@ def final_screener(data,yf_tickers,company_name_dict):
     
   scanner_df=pd.DataFrame(results)
   scanner_df=scanner_df.sort_values(by="score",ascending=False)
-  bullish=scanner_df[["Ticker","score","close","name"]].head(10).to_dict(orient="records")
-  bearish=scanner_df[["Ticker","score","close","name"]].tail(10).to_dict(orient="records")
+  bullish=scanner_df[["Ticker","score","close","name","change","pct_change"]].head(10).to_dict(orient="records")
+  bearish=scanner_df[["Ticker","score","close","name","change","pct_change"]].tail(10).to_dict(orient="records")
   return {
     "bullish":bullish,
     "bearish":bearish

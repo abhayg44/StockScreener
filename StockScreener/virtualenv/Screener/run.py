@@ -47,9 +47,9 @@ def all_strategy_run():
     ticker_data=data[ticker]
     ma50_score=(ma50_score_calculator(ticker_data))
     if ma50_score['final_ma50_score']>0:
-      bullish.append({"Ticker":ticker,"score":ma50_score['final_ma50_score'],"close":ma50_score['close'],"name":company_name_dict[ticker]})
+      bullish.append({"Ticker":ticker,"score":ma50_score['final_ma50_score'],"close":ma50_score['close'],"change":ma50_score['change'],"pct_change":ma50_score['pct_change'],"name":company_name_dict[ticker]})
     elif ma50_score['final_ma50_score']<0:
-      bearish.append({"Ticker":ticker,"score":ma50_score['final_ma50_score'],"close":ma50_score['close'],"name":company_name_dict[ticker]})
+      bearish.append({"Ticker":ticker,"score":ma50_score['final_ma50_score'],"close":ma50_score['close'],"change":ma50_score['change'],"pct_change":ma50_score['pct_change'],"name":company_name_dict[ticker]})
   bullish = sorted(bullish,key=lambda item:item["score"],reverse=True)[:7]
   bearish = sorted(bearish,key=lambda item:item["score"],reverse=True)[:7]
   final_data_ma50={}
@@ -67,9 +67,9 @@ def all_strategy_run():
     ticker_data=data[ticker]
     rsi_score=(rsi_score_momentum(ticker_data))
     if(rsi_score["final_rsi_score"]>0.2):
-      bullish.append({"Ticker":ticker,"score":rsi_score["final_rsi_score"],"close":rsi_score['close'],"name":company_name_dict[ticker]})
+      bullish.append({"Ticker":ticker,"score":rsi_score["final_rsi_score"],"close":rsi_score['close'],"change":rsi_score['change'],"pct_change":rsi_score['pct_change'],"name":company_name_dict[ticker]})
     elif(rsi_score["final_rsi_score"]<-0.2):
-      bearish.append({"Ticker":ticker,"score":rsi_score["final_rsi_score"],"close":rsi_score['close'],"name":company_name_dict[ticker]})
+      bearish.append({"Ticker":ticker,"score":rsi_score["final_rsi_score"],"close":rsi_score['close'],"change":rsi_score['change'],"pct_change":rsi_score['pct_change'],"name":company_name_dict[ticker]})
 
   bullish=sorted(bullish,key=lambda item:item["score"],reverse=True)[:7]
   bearish=sorted(bearish,key=lambda item:item["score"],reverse=True)[:7]
@@ -87,9 +87,9 @@ def all_strategy_run():
     sample_data=data[ticker]
     vol_data=(volume_score(sample_data))  
     if vol_data["final_volume_score"]>0:
-      bullish.append({"Ticker":ticker,"score":vol_data["final_volume_score"],"close":vol_data['close'],"name":company_name_dict[ticker]})
+      bullish.append({"Ticker":ticker,"score":vol_data["final_volume_score"],"close":vol_data['close'],"change":vol_data['change'],"pct_change":vol_data['pct_change'],"name":company_name_dict[ticker]})
     else:
-      bearish.append({"Ticker":ticker,"score":vol_data["final_volume_score"],"close":vol_data['close'],"name":company_name_dict[ticker]})
+      bearish.append({"Ticker":ticker,"score":vol_data["final_volume_score"],"close":vol_data['close'],"change":vol_data['change'],"pct_change":vol_data['pct_change'],"name":company_name_dict[ticker]})
   bullish = sorted(bullish,key=lambda item:item["score"],reverse=True)[:7]
   bearish = sorted(bearish,key=lambda item:item["score"],reverse=True)[:7]
   print("-----------------------------------------------------")
@@ -109,8 +109,9 @@ def all_strategy_run():
     "ma50":final_data_ma50,
     "rsi":final_data_rsi,
     "volume":final_data_vol,
-    "combined":final_data_combined
-  }  
+    "combined":final_data_combined,
+    "last_updated":datetime.now()
+  }
   return all_data
 
 def executing_all_strategy_run():

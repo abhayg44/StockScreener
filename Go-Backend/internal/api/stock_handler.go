@@ -3,57 +3,41 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
-	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
 	"github.com/STOCKSCREENER/Go-Backend/internal/models"
-	"github.com/streadway/amqp"
+	"github.com/STOCKSCREENER/Go-Backend/internal/services"
 )
 
-func failOnError(err error, msg string) error{
-	if err != nil {
-		panic(fmt.Sprintf("%s: %s", msg, err))
-	}
-	return err
-}
 
 var Cur_Stock_Data models.StockData
-var amqpURL = configs.GetConfig().AmqpURL
+var wg sync.WaitGroup
 
-func RunStockScreenerService() error{
-	conn,err:=amqp.Dial(amqpURL)
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
-	ch,err:=conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
-	q,err:=ch.QueueDeclare(
-		"stock_screener_run_queue",
-		true,
-		false,
-		false,
-		false,
-		nil,
-	)
-	failOnError(err, "Failed to declare a queue")
-	err=ch.Publish(
-		"",
-		q.Name,
-		false,
-		false,
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:       []byte("run"),
-		},
-	)
-	failOnError(err, "Failed to publish a message")
-	fmt.Println("Message published to queue")
+func RefreshCurrentStockDataJob() error{
+	wg.Add(1)
+
+	go func ()  {
+		defer wg.Done()
+		err := services.PublishStockScreenerJob()
+		if err != nil {
+			fmt.Errorf("failed to run stock screener service: %w", err)
+		}
+	}()
+	wg.Wait()
+	Cur_Stock_Data, err := services.GetStockFromRabbitmq()
+	if err != nil {
+		return fmt.Errorf("failed to get stock data from RabbitMQ: %w", err)
+
+	}
+	fmt.Println("Updated stock data: ", Cur_Stock_Data)
 	return nil
 }
 
+
+
 func RefreshCurrentStockData(w http.ResponseWriter, r *http.Request) {
-	err := RunStockScreenerService()
-	if err != nil {
-		http.Error(w, "Failed to run stock screener service", http.StatusInternalServerError)
+	if err := RefreshCurrentStockDataJob(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)

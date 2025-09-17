@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
+	"github.com/STOCKSCREENER/Go-Backend/internal/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -43,4 +45,18 @@ func DisconnectMongo(ctx context.Context) error {
     err := client.Disconnect(ctx)
     client = nil
     return err
+}
+
+var Cur_Stock_Data models.StockData
+var max_iterations = 5
+func StoreDataInMongo(databaseName,collectionName string,filter interface{},data interface{}) error {
+	initMongo(MongoURL)
+	collection := GetMongoCollection(databaseName, collectionName)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	
+	opts := options.FindOne().SetSort(bson.D{{Key: "last_updated", Value: -1}})
+	if err := collection.FindOne(ctx, bson.D{}, opts).Decode(&Cur_Stock_Data); err != nil {
+		
+	}
 }
