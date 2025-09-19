@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 import yfinance as yf
 from io import StringIO
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import talib as ta
 import numpy as np
 from Screener.strategies import ma50_score_calculator, rsi_score_momentum, volume_score, final_screener
@@ -110,7 +110,7 @@ def all_strategy_run():
     "rsi":final_data_rsi,
     "volume":final_data_vol,
     "combined":final_data_combined,
-    "last_updated":datetime.now()
+    "last_updated":datetime.now(timezone.utc).isoformat()
   }
   return all_data
 

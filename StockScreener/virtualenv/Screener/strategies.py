@@ -60,8 +60,8 @@ def rsi_score_momentum(data,rsi_period=14,lookback=20):
 
 
 def volume_score(data,lookback=20,slope_lookback=5):
-  volume_data=data["Volume"]
-  close_data=data["Close"]
+  volume_data=data["Volume"].dropna()
+  close_data=data["Close"].dropna()
   volume_series=ta.OBV(close_data,volume_data)
   if len(volume_series.dropna()) < lookback:
     return 0.0

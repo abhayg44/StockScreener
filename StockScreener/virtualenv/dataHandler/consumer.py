@@ -16,6 +16,7 @@ def start_consumer():
     if message.strip().lower()=="run":
       data=executing_all_strategy_run()
       print("Stock screener completed.")
+      print("Data from the screener: ",data)
       publish_result_rabbitmq(data)
       print("Result published to RabbitMQ.")
 

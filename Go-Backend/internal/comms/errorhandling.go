@@ -8,3 +8,4 @@ func FailOnError(err error, msg string) error{
 	}
 	return err
 }
+
