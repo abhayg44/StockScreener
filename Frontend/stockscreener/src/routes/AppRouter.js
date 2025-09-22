@@ -3,6 +3,7 @@ import HomePage from "../Pages/HomePage";
 import RegisterPage from "../Pages/RegisterPage";
 import Watchlist from "../Pages/Watchlist";
 import Profile from "../Pages/Profile";
+import StockPage from "../Pages/StockPage";
 
 function AppRoutes(props) {
   return (
@@ -22,6 +23,11 @@ function AppRoutes(props) {
             setUser={props.setUser}
           />
         }
+      />
+      <Route
+        path="/stock/:ticker"
+        setUser={props.setUser}
+        element={<StockPage />}
       />
     </Routes>
   );

@@ -29,6 +29,9 @@ func main() {
 	//stock api's
 	router.HandleFunc("POST /stock/refresh-stock-data", api.RefreshCurrentStockData)
 
+	router.HandleFunc("/stock/", api.StockDataHandler)
+	fmt.Println("WebSocket server started on ws://localhost:3000/stock")
+	
 
 
 	srv := &http.Server{
