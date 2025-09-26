@@ -3,6 +3,24 @@ import { useState, useEffect, use } from "react";
 import { useParams } from "react-router-dom";
 import { Atom } from "react-loading-indicators";
 import { Line } from "react-chartjs-2";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import "./StockPage.css";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Bar } from "react-chartjs-2";
+import { FaInfoCircle } from "react-icons/fa";
+import { SlArrowDown } from "react-icons/sl";
+import {
+  FaMoneyBillWave,
+  FaChartBar,
+  FaBalanceScale,
+  FaPiggyBank,
+  FaCoins,
+  FaWallet,
+  FaCashRegister,
+} from "react-icons/fa";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,6 +30,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  BarElement,
 } from "chart.js";
 
 ChartJS.register(
@@ -21,7 +40,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  BarElement
 );
 
 function StockPage() {
@@ -29,23 +49,32 @@ function StockPage() {
   console.log("ticker is ", ticker);
   const [isLoading, setIsLoading] = useState(false);
   const [hist_data, setHist_data] = useState([]);
+  const [yst_data, setYst_data] = useState({});
   const [fiftyTwoWeekHigh, setFiftyTwoWeekHigh] = useState(NaN);
   const [fiftyTwoWeekLow, setFiftyTwoWeekLow] = useState(NaN);
   const [market_cap, setMarket_cap] = useState(NaN);
   const [pe_ratio, setPe_ratio] = useState(NaN);
   const [div_yield, setDiv_yield] = useState(NaN);
-  const [market, setMarket] = useState(NaN);
   const [sector, setSector] = useState(NaN);
   const [industry, setIndustry] = useState(NaN);
   const [website, setWebsite] = useState(NaN);
-  const [long_name, setLong_name] = useState(NaN);
+  const [growth_data, setGrowth_data] = useState({});
 
   const [httpUrl, setHttpUrl] = useState(
-    `${process.env.REACT_APP_GO_HISTORICAL_DATA_URL.replace(
+    `${process.env.REACT_APP_PYTHON_HISTORICAL_DATA_URL.replace(
       "{ticker}",
       ticker
     )}?period=6mo&interval=1d`
   );
+
+  const currentPrice = yst_data.close;
+  const percentagePosition =
+    fiftyTwoWeekHigh && fiftyTwoWeekLow && currentPrice
+      ? ((currentPrice - fiftyTwoWeekLow) /
+          (fiftyTwoWeekHigh - fiftyTwoWeekLow)) *
+        100
+      : 0;
+
   useEffect(() => {
     setIsLoading(true);
     console.log("url is ", httpUrl);
@@ -59,11 +88,11 @@ function StockPage() {
         setMarket_cap(response.data.market_cap);
         setPe_ratio(response.data.pe_ratio);
         setDiv_yield(response.data.dividend_yield);
-        setMarket(response.data.market);
         setSector(response.data.sector);
         setIndustry(response.data.industry);
         setWebsite(response.data.website);
-        setLong_name(response.data.longName);
+        setYst_data(response.data.yesterday_data);
+        setGrowth_data(response.data.growth_data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -72,6 +101,24 @@ function StockPage() {
         setIsLoading(false);
       });
   }, [httpUrl]);
+
+  const getBarData = (dataArr, label) => {
+    if (!dataArr || dataArr.length === 0) {
+      return null;
+    }
+    return {
+      labels: dataArr.map((data) => data.date),
+      datasets: [
+        {
+          label: label,
+          data: dataArr.map((data) => data.value),
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+      ],
+    };
+  };
 
   const handleTimeFrameChange = (timeFrame) => {
     setIsLoading(true);
@@ -93,12 +140,26 @@ function StockPage() {
       period = "5d";
       interval = "1d";
     }
-    const newUrl = `${process.env.REACT_APP_GO_HISTORICAL_DATA_URL.replace(
+    const newUrl = `${process.env.REACT_APP_PYTHON_HISTORICAL_DATA_URL.replace(
       "{ticker}",
       ticker
     )}?period=${period}&interval=${interval}`;
     console.log("url is ", newUrl);
     setHttpUrl(newUrl);
+  };
+
+  const formatNumber = (num) => {
+    if (num === null || num === undefined || isNaN(num)) return "N/A";
+    return Number(num).toLocaleString("en-IN");
+  };
+
+  const InfoTooltip = ({ text }) => {
+    return (
+      <span className="tooltip-container">
+        <FaInfoCircle className="info-icon" />
+        <span className="tooltip-text">{text}</span>
+      </span>
+    );
   };
 
   const closePriceChartData = {
@@ -136,35 +197,210 @@ function StockPage() {
   }
 
   return (
-    <div>
+    <div className="stock-page-container">
       <button onClick={() => handleTimeFrameChange("1Y")}>1 Year</button>
       <button onClick={() => handleTimeFrameChange("6M")}>6 Month</button>
       <button onClick={() => handleTimeFrameChange("3M")}>3 Month</button>
       <button onClick={() => handleTimeFrameChange("1M")}>1 Month</button>
       <button onClick={() => handleTimeFrameChange("5D")}>5 Day</button>
       <h2>Live Stock Data for {ticker}</h2>
-      <Line data={closePriceChartData} />
-      <Line data={volumeChartData} />
-      <ul>
-        <li>52 Week High: {fiftyTwoWeekHigh}</li>
-        <li>52 Week Low: {fiftyTwoWeekLow}</li>
-        <li>Market Cap: {market_cap}</li>
-        <li>P/E Ratio: {pe_ratio}</li>
-        <li>Dividend Yield: {div_yield}</li>
-        <li>Market: {market}</li>
-        <li>Sector: {sector}</li>
-        <li>Industry: {industry}</li>
-        <li>
-          Website:{" "}
-          {website !== "N/A" ? (
-            <a href={website} target="_blank" rel="noopener noreferrer">
-              {website}
-            </a>
-          ) : (
-            "N/A"
+      <div className="chart-container">
+        <Line data={closePriceChartData} />
+      </div>
+      <div className="chart-container">
+        <Line data={volumeChartData} />
+      </div>
+      <Swiper
+        spaceBetween={30}
+        slidesPerView={1}
+        navigation
+        pagination={{ clickable: true }}
+        modules={[Navigation, Pagination]}
+      >
+        <SwiperSlide>
+          <h3>
+            <FaMoneyBillWave style={{ color: "#2d35cc", marginRight: 8 }} />
+            Net Income
+          </h3>
+          {growth_data.net_income && (
+            <Bar data={getBarData(growth_data.net_income, "Net Income")} />
           )}
-        </li>
-        <li>Long Name: {long_name}</li>
+        </SwiperSlide>
+        <SwiperSlide>
+          <h3>
+            <FaChartBar style={{ color: "#2d35cc", marginRight: 8 }} />
+            EBITDA
+          </h3>
+          {growth_data.ebitda && (
+            <Bar data={getBarData(growth_data.ebitda, "EBITDA")} />
+          )}
+        </SwiperSlide>
+        <SwiperSlide>
+          <h3>
+            <FaBalanceScale style={{ color: "#2d35cc", marginRight: 8 }} />
+            Operating Income
+          </h3>
+          {growth_data.operating_income && (
+            <Bar
+              data={getBarData(
+                growth_data.operating_income,
+                "Operating Income"
+              )}
+            />
+          )}
+        </SwiperSlide>
+        <SwiperSlide>
+          <h3>
+            <FaPiggyBank style={{ color: "#2d35cc", marginRight: 8 }} />
+            Total Assets
+          </h3>
+          {growth_data.total_assets && (
+            <Bar data={getBarData(growth_data.total_assets, "Total Assets")} />
+          )}
+        </SwiperSlide>
+        <SwiperSlide>
+          <h3>
+            <FaCoins style={{ color: "#2d35cc", marginRight: 8 }} />
+            Total Liabilities
+          </h3>
+          {growth_data.total_liabilities && (
+            <Bar
+              data={getBarData(
+                growth_data.total_liabilities,
+                "Total Liabilities"
+              )}
+            />
+          )}
+        </SwiperSlide>
+        <SwiperSlide>
+          <h3>
+            <FaWallet style={{ color: "#2d35cc", marginRight: 8 }} />
+            Net Worth
+          </h3>
+          {growth_data.networth && (
+            <Bar data={getBarData(growth_data.networth, "Net Worth")} />
+          )}
+        </SwiperSlide>
+        <SwiperSlide>
+          <h3>
+            <FaCashRegister style={{ color: "#2d35cc", marginRight: 8 }} />
+            Free Cash Flow
+          </h3>
+          {growth_data.free_cash_flow && (
+            <Bar
+              data={getBarData(growth_data.free_cash_flow, "Free Cash Flow")}
+            />
+          )}
+        </SwiperSlide>
+      </Swiper>
+      <ul>
+        <div className="yesterday-data info-box">
+          <h3>Yesterday's Data</h3>
+          <li>
+            <label>Yesterday's Date:</label>
+            {yst_data.date}
+          </li>
+          <li>
+            <label>Yesterday's Close: </label>
+            Rs.{formatNumber(yst_data.close)}
+          </li>
+          <li>
+            <label>Yesterday's High: </label>
+            Rs.{formatNumber(yst_data.high)}
+          </li>
+          <li>
+            <label>Yesterday's Low: </label>
+            Rs.{formatNumber(yst_data.low)}
+          </li>
+          <li>
+            <label>Yesterday's Open: </label>
+            Rs.{formatNumber(yst_data.open)}
+          </li>
+          <li>
+            <label>Yesterday's Volume: </label>
+            {formatNumber(yst_data.volume)}
+          </li>
+        </div>
+        <div className="stock-info-header info-box">
+          <h3>52 Week Range</h3>
+          <div className="week-high-low-bar">
+            <div className="bar-line"></div>
+            <div
+              className="price-marker"
+              style={{ left: `${percentagePosition}%` }}
+            >
+              <div className="price-top">
+                <span className="price-text">
+                  Rs.{formatNumber(currentPrice)}
+                </span>
+                <InfoTooltip text="Current price" className="price-tooltip" />
+              </div>
+              <SlArrowDown className="price-arrow" />
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              maxWidth: "600px",
+              margin: "0 auto",
+            }}
+          >
+            <span style={{ color: "#ff6b6b", fontWeight: 600 }}>
+              Rs.{formatNumber(fiftyTwoWeekLow)}
+              <InfoTooltip text="Lowest price over the last 52 weeks" />
+            </span>
+            <span style={{ color: "#4caf50", fontWeight: 600 }}>
+              Rs.{formatNumber(fiftyTwoWeekHigh)}
+              <InfoTooltip text="Highest price over the last 52 weeks" />
+            </span>
+          </div>
+        </div>
+        <div className="fundamental-info info-box">
+          <h3>Fundamental Information</h3>
+          <li>
+            <label>
+              Market Cap:
+              <InfoTooltip text="The current market value of all of a company's outstanding stock shares" />
+            </label>
+            Rs.{formatNumber(market_cap)}
+          </li>
+          <li>
+            <label>
+              P/E Ratio:
+              <InfoTooltip text="It is the ratio that measures a company's share price relative to its earnings per share (EPS)" />
+            </label>
+            {pe_ratio}
+          </li>
+          <li>
+            <label>
+              Dividend Yield:
+              <InfoTooltip text="A financial ratio that shows how much a company pays out in dividends each year to its investors relative to its stock price" />
+            </label>
+            {div_yield}
+          </li>
+          <li>
+            <label>
+              Sector:
+              <InfoTooltip text="The sector to which the company belongs" />
+            </label>
+            {sector}
+          </li>
+          <li>
+            <label>Industry: </label>
+            {industry}
+          </li>
+          <li>
+            <label>Website: </label>
+            {website !== "N/A" ? (
+              <a href={website} target="_blank" rel="noopener noreferrer">
+                {website}
+              </a>
+            ) : (
+              "N/A"
+            )}
+          </li>
+        </div>
       </ul>
     </div>
   );

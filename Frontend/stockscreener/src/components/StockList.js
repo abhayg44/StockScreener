@@ -184,11 +184,12 @@ function StockList() {
                     : ""
                 }
               >
-                <h3>{stock["name"]}</h3>
-                <p>ma50-ma200 based score: {stock["score"]}</p>
-                <p>Close: ${stock["close"]}</p>
-                <p>Change: ${stock["change"]}</p>
-                <p>Change Percentage: {stock["pct_change"]}%</p>
+                <Link to={`/stock/${stock["ticker"]}`}>
+                  <h3>{stock["name"]}</h3>
+                  <p>Close: ${stock["close"]}</p>
+                  <p>Change: ${stock["change"]}</p>
+                  <p>Change Percentage: {stock["pct_change"]}%</p>
+                </Link>
               </div>
             );
           })}
@@ -211,11 +212,13 @@ function StockList() {
                   : ""
               }
             >
-              <h3>{stock["name"]}</h3>
-              <p>ma50-ma200 based score: {stock["score"]}</p>
-              <p>Close: ${stock["close"]}</p>
-              <p>Change: ${stock["change"]}</p>
-              <p>Change Percentage: {stock["pct_change"]}%</p>
+              <Link to={`/stock/${stock["ticker"]}`}>
+                <h3>{stock["name"]}</h3>
+                <p>ma50-ma200 based score: {stock["score"]}</p>
+                <p>Close: ${stock["close"]}</p>
+                <p>Change: ${stock["change"]}</p>
+                <p>Change Percentage: {stock["pct_change"]}%</p>
+              </Link>
             </div>
           ))}
         </div>
@@ -237,11 +240,13 @@ function StockList() {
                   : ""
               }
             >
-              <h3>{stock["name"]}</h3>
-              <p>ma50-ma200 based score: {stock["score"]}</p>
-              <p>Close: ${stock["close"]}</p>
-              <p>Change: ${stock["change"]}</p>
-              <p>Change Percentage: {stock["pct_change"]}%</p>
+              <Link to={`/stock/${stock["ticker"]}`}>
+                <h3>{stock["name"]}</h3>
+                <p>ma50-ma200 based score: {stock["score"]}</p>
+                <p>Close: ${stock["close"]}</p>
+                <p>Change: ${stock["change"]}</p>
+                <p>Change Percentage: {stock["pct_change"]}%</p>
+              </Link>
             </div>
           ))}
         </div>
@@ -263,11 +268,13 @@ function StockList() {
                   : ""
               }
             >
-              <h3>{stock["name"]}</h3>
-              <p>ma50-ma200 based score: {stock["score"]}</p>
-              <p>Close: ${stock["close"]}</p>
-              <p>Change: ${stock["change"]}</p>
-              <p>Change Percentage: {stock["pct_change"]}%</p>
+              <Link to={`/stock/${stock["ticker"]}`}>
+                <h3>{stock["name"]}</h3>
+                <p>ma50-ma200 based score: {stock["score"]}</p>
+                <p>Close: ${stock["close"]}</p>
+                <p>Change: ${stock["change"]}</p>
+                <p>Change Percentage: {stock["pct_change"]}%</p>
+              </Link>
             </div>
           ))}
         </div>
