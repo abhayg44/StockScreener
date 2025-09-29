@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useState, useEffect, use } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Atom } from "react-loading-indicators";
 import { Line } from "react-chartjs-2";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,6 +12,8 @@ import "swiper/css/navigation";
 import { Bar } from "react-chartjs-2";
 import { FaInfoCircle } from "react-icons/fa";
 import { SlArrowDown } from "react-icons/sl";
+import { CiBookmark } from "react-icons/ci";
+import { FaBookmark } from "react-icons/fa";
 import {
   FaMoneyBillWave,
   FaChartBar,
@@ -46,6 +48,7 @@ ChartJS.register(
 
 function StockPage() {
   const { ticker } = useParams();
+  const navigate = useNavigate();
   console.log("ticker is ", ticker);
   const [isLoading, setIsLoading] = useState(false);
   const [hist_data, setHist_data] = useState([]);
@@ -59,6 +62,35 @@ function StockPage() {
   const [industry, setIndustry] = useState(NaN);
   const [website, setWebsite] = useState(NaN);
   const [growth_data, setGrowth_data] = useState({});
+  const [name, setName] = useState("");
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+  const [unauthorized, setUnauthorized] = useState(false);
+  const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const [clickCount, setClickCount] = useState(0);
+  const RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
+  const MAX_CLICKS_PER_WINDOW = 5; // Maximum 5 clicks per minute
+
+  // Helper function to check if user exceeded rate limit
+  const isRateLimited = () => {
+    const now = Date.now();
+    const timeSinceLastClick = now - lastClickTime;
+
+    if (timeSinceLastClick > RATE_LIMIT_WINDOW) {
+      // Reset counter if window has passed
+      setClickCount(1);
+      setLastClickTime(now);
+      return false;
+    }
+
+    if (clickCount >= MAX_CLICKS_PER_WINDOW) {
+      return true; // Rate limited
+    }
+
+    setClickCount(clickCount + 1);
+    return false;
+  };
 
   const [httpUrl, setHttpUrl] = useState(
     `${process.env.REACT_APP_PYTHON_HISTORICAL_DATA_URL.replace(
@@ -75,13 +107,76 @@ function StockPage() {
         100
       : 0;
 
+  const fetchIsWishlisted = async (ticker) => {
+    if (unauthorized) return;
+    try {
+      const userString = localStorage.getItem("user");
+      const token = localStorage.getItem("token");
+      console.log(
+        "inside fetchiswishlist ticker is ",
+        ticker,
+        "user id is ",
+        userString,
+        " token is ",
+        token
+      );
+      if (!userString || !token) {
+        console.log("User not logged in");
+        setUnauthorized(true);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        return;
+      }
+
+      const user = JSON.parse(userString);
+      const userId = user.id;
+
+      const response = await axios.get(
+        process.env.REACT_APP_NODE_ISWISHLIST_URL +
+          `?user_id=${userId}&ticker=${ticker}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Is wishlisted response:", response.data);
+
+      // Check the actual response structure from your backend
+      if (response.data.message == "is wishlisted") {
+        setIsBookmarked(true);
+        console.log("ticker is wishlisted already");
+      } else {
+        setIsBookmarked(false);
+        console.log("ticker is not wishlisted");
+      }
+    } catch (error) {
+      console.error("Error checking wishlist status:", error);
+
+      if (
+        error.response &&
+        (error.response.status === 401 || error.response.status === 403)
+      ) {
+        setUnauthorized(true);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+
+      setIsBookmarked(false);
+    }
+  };
+
   useEffect(() => {
+    fetchIsWishlisted(ticker);
     setIsLoading(true);
     console.log("url is ", httpUrl);
     axios
       .get(httpUrl)
       .then((response) => {
         console.log("historical data response is ", response.data);
+        setName(response.data.name);
         setHist_data(response.data.historic_data);
         setFiftyTwoWeekHigh(response.data["52w_high"]);
         setFiftyTwoWeekLow(response.data["52w_low"]);
@@ -118,6 +213,81 @@ function StockPage() {
         },
       ],
     };
+  };
+
+  const handleRemoveFromWatchlist = async (ticker) => {
+    if (isBookmarkLoading) return;
+    setIsBookmarkLoading(true);
+    const userString = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    if (userString && token) {
+      try {
+        const userId = JSON.parse(userString).id;
+        const response = await axios.delete(
+          process.env.REACT_APP_NODE_WISHLIST_URL +
+            `?user_id=${userId}&ticker=${ticker}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Remove from watchlist response:", response);
+        setIsBookmarked(false);
+        setShowSplash(true);
+        setTimeout(() => setShowSplash(false), 600);
+      } catch (error) {
+        console.error("Error removing from watchlist:", error);
+      }
+    } else {
+      console.log("User not logged in");
+      setUnauthorized(true);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+    setTimeout(() => setIsBookmarkLoading(false), 3500);
+  };
+
+  const handleAddToWatchlist = async (ticker, name, close_price, change) => {
+    if (isBookmarkLoading) return;
+    setIsBookmarkLoading(true);
+    const userId = localStorage.getItem("user")
+      ? JSON.parse(localStorage.getItem("user")).id
+      : null;
+    if (userId || ticker === "") {
+      try {
+        const response = await axios.post(
+          process.env.REACT_APP_NODE_WISHLIST_URL + `?user_id=${userId}`,
+          {
+            user_id: userId,
+            ticker: ticker,
+            name: name,
+            close_price: close_price,
+            change: change,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        console.log("Add to watchlist response:", response);
+        setIsBookmarked(true);
+        setShowSplash(true);
+        setTimeout(() => setShowSplash(false), 600);
+      } catch (error) {
+        console.error("Error adding to watchlist:", error);
+      }
+    } else {
+      setUnauthorized(true);
+      navigate("/register");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      console.log("User not logged in");
+    }
+    setTimeout(() => setIsBookmarkLoading(false), 3500);
   };
 
   const handleTimeFrameChange = (timeFrame) => {
@@ -198,12 +368,55 @@ function StockPage() {
 
   return (
     <div className="stock-page-container">
-      <button onClick={() => handleTimeFrameChange("1Y")}>1 Year</button>
-      <button onClick={() => handleTimeFrameChange("6M")}>6 Month</button>
-      <button onClick={() => handleTimeFrameChange("3M")}>3 Month</button>
-      <button onClick={() => handleTimeFrameChange("1M")}>1 Month</button>
-      <button onClick={() => handleTimeFrameChange("5D")}>5 Day</button>
-      <h2>Live Stock Data for {ticker}</h2>
+      <div className="header-controls">
+        <div className="timeframe-buttons">
+          <button onClick={() => handleTimeFrameChange("1Y")}>1 Year</button>
+          <button onClick={() => handleTimeFrameChange("6M")}>6 Month</button>
+          <button onClick={() => handleTimeFrameChange("3M")}>3 Month</button>
+          <button onClick={() => handleTimeFrameChange("1M")}>1 Month</button>
+          <button onClick={() => handleTimeFrameChange("5D")}>5 Day</button>
+        </div>
+        <div className="bookmark-container">
+          Save to Watchlist
+          <div
+            className={`bookmark-icon ${isBookmarked ? "bookmarked" : ""} ${
+              showSplash ? "splash" : ""
+            } ${isBookmarkLoading ? "loading" : ""}`}
+            onClick={() => {
+              if (isBookmarkLoading) return;
+
+              // Check rate limit before processing
+              if (!isBookmarked && isRateLimited()) {
+                alert(
+                  "Too many requests. Please wait a moment before trying again."
+                );
+                return;
+              }
+
+              if (isBookmarked) {
+                handleRemoveFromWatchlist(ticker);
+              } else {
+                const change = Number(
+                  (hist_data[0].price - hist_data[1].price).toFixed(2)
+                );
+                console.log("Price change:", change);
+                handleAddToWatchlist(ticker, name, hist_data[0].price, change);
+              }
+            }}
+            style={{
+              cursor: isBookmarkLoading ? "not-allowed" : "pointer",
+              opacity: isBookmarkLoading ? 0.6 : 1,
+            }}
+          >
+            {isBookmarked ? (
+              <FaBookmark className="bookmark-filled" />
+            ) : (
+              <CiBookmark className="bookmark-outline" />
+            )}
+          </div>
+        </div>
+      </div>
+      <h2>Live Stock Data for {name}</h2>
       <div className="chart-container">
         <Line data={closePriceChartData} />
       </div>

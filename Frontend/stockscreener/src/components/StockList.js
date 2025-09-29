@@ -137,9 +137,9 @@ function StockList() {
         <div className="unauthorized-box">
           <h2>Unauthorized Access</h2>
           <p>Please login to continue</p>
-          <Link to="/register" className="login-btn">
+          <a href="/register" className="login-btn">
             Go to Login
-          </Link>
+          </a>
         </div>
       </div>
     );

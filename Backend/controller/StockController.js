@@ -3,12 +3,9 @@ const stockModel = require("../models/Stock");
 
 const getStockData = async (req, res) => {
   try {
-    console.log(stockModel);
-    console.log("Fetching stock data...");
     const stockData = await stockModel
       .findOne({})
       .sort({ last_updated: -1, _id: -1 });
-    console.log(stockData);
     res.status(200).json(stockData);
   } catch (err) {
     res.status(500).json({ message: err.message });

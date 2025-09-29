@@ -21,16 +21,17 @@ h2 {
 }
 
 .chart-container {
-  margin: 20px 0;
+  margin: 20px 10px;
   padding: 10px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  height: 400px;
 }
 
 .chart-container canvas {
   width: 100% !important;
-  height: 400px !important;
+  height: 100% !important;
 }
 
 .swiper-slide {
@@ -52,15 +53,6 @@ h2 {
 .swiper-wrapper {
   margin: 0 !important;
   padding: 0 !important;
-}
-
-.swiper-slide canvas {
-  width: 95% !important;
-  height: 350px !important; /* Smaller bar charts */
-  padding-bottom: 20px;
-  padding-left: 23px;
-  padding-right: 10px;
-  margin-left: 15px;
 }
 
 /* Headings inside slides */
@@ -379,4 +371,142 @@ button:hover {
   background-color: rgba(208, 208, 212, 0.9);
   border-radius: 20px;
   padding: 3px 6px;
+}
+
+/* Header controls container */
+.header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+/* Timeframe buttons container */
+.timeframe-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.timeframe-buttons button {
+  background: #2d35cc;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin: 0; /* Remove default margin */
+}
+
+.timeframe-buttons button:hover,
+.timeframe-buttons button:focus {
+  background: #1a1f7a;
+  outline: none;
+}
+
+/* Update bookmark container */
+.bookmark-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 60pxf;
+  }
+
+  .bookmark-container {
+    justify-content: center;
+  }
+
+  .timeframe-buttons {
+    justify-content: center;
+  }
+}
+
+.bookmark-icon:hover {
+  background-color: rgba(45, 53, 204, 0.1);
+  transform: scale(1.1);
+}
+
+.bookmark-icon.loading:hover,
+.bookmark-icon:hover[style*="not-allowed"] {
+  background-color: transparent !important;
+  transform: none !important;
+}
+
+/* Bookmark icons */
+.bookmark-outline {
+  font-size: 20px;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.bookmark-filled {
+  font-size: 20px;
+  color: #444;
+  animation: bookmarkFill 0.4s ease-out;
+}
+
+/* Fill animation */
+@keyframes bookmarkFill {
+  0% {
+    transform: scale(1);
+    color: #666;
+  }
+  50% {
+    transform: scale(1.2);
+    color: #444;
+  }
+  100% {
+    transform: scale(1);
+    color: #444;
+  }
+}
+
+/* Splash animation */
+.bookmark-icon.splash::before {
+  content: "";
+  position: absolute;
+  align-items: baseline;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background-color: rgba(45, 53, 204, 0.3);
+  transform: translate(-50%, -50%);
+  animation: splash 0.6s ease-out;
+  z-index: -1;
+}
+
+@keyframes splash {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  50% {
+    width: 60px;
+    height: 60px;
+    opacity: 0.7;
+  }
+  100% {
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+  }
+}
+
+.bookmark-icon:active {
+  transform: scale(0.95);
 }

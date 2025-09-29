@@ -81,6 +81,7 @@ def get_historic_data(ticker: str, period: str="90d", interval: str = "1d"):
     }
 
     return {
+        "name": ticker_obj.info.get("longName") or ticker_obj.info.get("shortName") or ticker,
         "ticker": ticker,
         "historic_data": historic_data,
         "yesterday_data": yesterday_data,

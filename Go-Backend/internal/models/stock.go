@@ -25,3 +25,5 @@ type StockData struct {
 	Final       StrategyResult `json:"combined" bson:"combined"`
 	LastUpdated time.Time      `json:"last_updated" bson:"last_updated"`
 }
+
+
