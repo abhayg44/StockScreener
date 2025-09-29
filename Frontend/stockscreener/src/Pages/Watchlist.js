@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Atom } from "react-loading-indicators";
+import "./Watchlist.css";
 
 function Watchlist() {
   const [unauthorized, setUnauthorized] = React.useState(false);
@@ -74,29 +75,88 @@ function Watchlist() {
   }
 
   return (
-    <div>
+    <div className="watchlist-container">
       {unauthorized ? (
-        <div>
-          <h2>Please log in to view your watchlist.</h2>
-          <a href="/register">Go to Login</a>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+        <div className="unauthorized-container">
+          <div className="unauthorized-card">
+            <h2>🔒 Access Required</h2>
+            <p>
+              Please log in to view your watchlist and track your favorite
+              stocks.
+            </p>
+            <div className="auth-buttons">
+              <a href="/login" className="auth-btn">
+                Login
+              </a>
+              <a href="/register" className="auth-btn secondary">
+                Sign Up
+              </a>
+            </div>
+            {error && <p className="error-message">{error}</p>}
+          </div>
         </div>
       ) : (
-        <div>
-          <h2>Your Watchlist</h2>
-          <ul>
-            {wishlist.map((item) => (
-              <a
-                href={`/stock/${item.ticker}`}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <li key={item.ticker}>
-                  {item.name} - {item.ticker} - Rs.{item.close_price} - Rs.
-                  {item.change}
-                </li>
+        <div className="watchlist-content">
+          <div className="watchlist-header">
+            <h1 className="watchlist-title">📊 My Watchlist</h1>
+            <p className="watchlist-subtitle">
+              Stocks that you have added to your watchlist for quick access.
+            </p>
+            <p className="stock-count">
+              {wishlist?.length || 0}{" "}
+              {wishlist?.length === 1 ? "stock" : "stocks"} tracked
+            </p>
+          </div>
+
+          {wishlist && wishlist.length > 0 ? (
+            <div className="stocks-grid">
+              {wishlist.map((item) => (
+                <a
+                  key={item.ticker}
+                  href={`/stock/${item.ticker}`}
+                  className="stock-card"
+                >
+                  <div className="stock-header">
+                    <div className="stock-info">
+                      <h3 className="stock-name">{item.name}</h3>
+                      <span className="stock-ticker">{item.ticker}</span>
+                    </div>
+                    <div className="stock-price-section">
+                      <div className="stock-price">
+                        ₹{item.close_price?.toLocaleString()}
+                      </div>
+                      <div
+                        className={`stock-change ${
+                          item.change > 0
+                            ? "positive"
+                            : item.change < 0
+                            ? "negative"
+                            : "neutral"
+                        }`}
+                      >
+                        {item.change > 0 ? "+" : ""}₹{item.change}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="stock-footer">
+                    <span className="view-details">View Details →</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-watchlist">
+              <div className="empty-icon">📈</div>
+              <h3 className="empty-title">Your watchlist is empty</h3>
+              <p className="empty-description">
+                Start building your portfolio by adding stocks you want to
+                track.
+              </p>
+              <a href="/search" className="browse-stocks-btn">
+                Browse Stocks
               </a>
-            ))}
-          </ul>
+            </div>
+          )}
         </div>
       )}
     </div>

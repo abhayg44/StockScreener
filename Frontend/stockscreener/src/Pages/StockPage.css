@@ -20,18 +20,23 @@ h2 {
   padding: 20px;
 }
 
+/* Fix chart container to maintain aspect ratio and enable hover */
 .chart-container {
-  margin: 20px 10px;
-  padding: 10px;
+  position: relative;
+  height: 400px; /* Set a fixed height */
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 20px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .chart-container canvas {
-  width: 100% !important;
+  position: relative !important;
   height: 100% !important;
+  width: 100% !important;
+  max-height: 360px;
 }
 
 .swiper-slide {
@@ -49,7 +54,6 @@ h2 {
   box-sizing: border-box;
 }
 
-/* Avoid previous chart bleeding */
 .swiper-wrapper {
   margin: 0 !important;
   padding: 0 !important;

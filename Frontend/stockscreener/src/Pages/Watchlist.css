@@ -1,0 +1,436 @@
+/* Watchlist.css */
+
+/* Main container */
+.watchlist-container {
+  min-height: 100vh;
+  background: #f7f9fb;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #222;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Error container */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-size: 1.1rem;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+  border-left: 4px solid #e74c3c;
+  max-width: 500px;
+}
+
+/* Unauthorized container */
+.unauthorized-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.unauthorized-card {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 2px 20px rgba(44, 62, 80, 0.1);
+  text-align: center;
+  max-width: 500px;
+  margin: 20px;
+}
+
+.unauthorized-card h2 {
+  color: #2d35cc;
+  font-size: 2rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.unauthorized-card p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+/* Auth buttons */
+.auth-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.auth-btn {
+  background: #2d35cc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  min-width: 120px;
+}
+
+.auth-btn:hover {
+  background: #1a1f7a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 53, 204, 0.3);
+}
+
+.auth-btn.secondary {
+  background: transparent;
+  color: #2d35cc;
+  border: 2px solid #2d35cc;
+}
+
+.auth-btn.secondary:hover {
+  background: #2d35cc;
+  color: #fff;
+}
+
+/* Main content */
+.watchlist-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.watchlist-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.watchlist-title {
+  color: #2d35cc;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.watchlist-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.stock-count {
+  color: #888;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+/* Stocks grid */
+/* Stocks grid */
+.stocks-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Single column */
+  gap: 24px;
+  margin-bottom: 40px;
+  max-width: 70%; /* Limit the grid width */
+  margin: 0 auto 40px auto; /* Center the entire grid */
+}
+
+/* Stock cards */
+.stock-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  /* Remove max-width: 70% from here since it's now on the grid */
+}
+
+.stock-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(45, 53, 204, 0.15);
+  border-color: #2d35cc;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Stock card header */
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.stock-info {
+  flex: 1;
+}
+
+.stock-name {
+  font-size: 1.25rem;
+  color: #2d35cc;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  line-height: 1.3;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stock-ticker {
+  background: #eaf1ff;
+  color: #2d35cc;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+/* Price section */
+.stock-price-section {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stock-price {
+  font-size: 1.5rem;
+  color: #2d35cc;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stock-change {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.stock-change.positive {
+  color: #27ae60;
+  background: #d5f4e6;
+}
+
+.stock-change.negative {
+  color: #e74c3c;
+  background: #ffeaea;
+}
+
+.stock-change.neutral {
+  color: #666;
+  background: #f0f0f0;
+}
+
+/* Stock footer */
+.stock-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.last-price-label {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.view-details {
+  color: #2d35cc;
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.stock-card:hover .view-details {
+  opacity: 1;
+}
+
+/* Empty state */
+.empty-watchlist {
+  text-align: center;
+  padding: 60px 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+  margin: 40px auto;
+  max-width: 600px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  color: #2d35cc;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.empty-description {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.browse-stocks-btn {
+  background: #2d35cc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.browse-stocks-btn:hover {
+  background: #1a1f7a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 53, 204, 0.3);
+}
+
+/* Legacy list styles (if you want to keep the ul/li structure) */
+.watchlist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.watchlist-item {
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px rgba(44, 62, 80, 0.07);
+  transition: all 0.3s ease;
+}
+
+.watchlist-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(45, 53, 204, 0.1);
+}
+
+.watchlist-link {
+  display: block;
+  padding: 20px 24px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+}
+
+.watchlist-item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Update responsive design for mobile */
+@media (max-width: 768px) {
+  .watchlist-container {
+    padding: 10px;
+  }
+
+  .stocks-grid {
+    max-width: 95%; /* Wider on mobile */
+    gap: 16px;
+  }
+
+  .stock-card {
+    padding: 20px;
+  }
+
+  .watchlist-title {
+    font-size: 2rem;
+  }
+
+  .stock-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .stock-price-section {
+    align-items: flex-start;
+  }
+
+  .stock-name {
+    max-width: none;
+    white-space: normal;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .unauthorized-card {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .watchlist-container {
+    padding: 5px;
+  }
+
+  .stocks-grid {
+    max-width: 100%; /* Full width on very small screens */
+  }
+
+  .stock-card {
+    padding: 16px;
+  }
+
+  .watchlist-title {
+    font-size: 1.75rem;
+  }
+
+  .stock-price {
+    font-size: 1.25rem;
+  }
+}
