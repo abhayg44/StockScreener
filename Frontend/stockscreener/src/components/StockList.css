@@ -121,25 +121,43 @@
   border: 2px solid transparent;
 }
 
-.stock-tile a {
-  text-decoration: none;
-  color: inherit;
+.stock-tile a,
+.stock-tile a:visited {
   display: block;
-  cursor: pointer;
-  padding: 1rem;
-  border-radius: 8px;
-  transition: all 0.2s ease-in-out;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #222;
+  text-decoration: none;
+  font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(79, 140, 255, 0.08);
+  transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+  margin-bottom: 18px;
 }
 
-.stock-tile:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 105%;
-  background: #e3f2fd;
-  transform: translateY(-4px);
-  border-color: #90caf9;
+.stock-tile a:hover {
+  background: #e0e7ef;
+  color: #222;
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(79, 140, 255, 0.15);
 }
 
-/* Dynamic coloring based on score */
+.stock-tile h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.stock-tile p {
+  margin: 2px 0;
+  font-size: 1.05rem;
+  font-family: "Segoe UI", "Roboto", Arial, sans-serif;
+  font-weight: 600;
+}
+
 .stock-tile[data-score] {
   background: linear-gradient(90deg, #ffebee 0%, #f5f7fa 100%);
   border-color: #e57373;
@@ -161,16 +179,14 @@
   border-color: #b71c1c;
 }
 
-.stock-tile h3 {
-  margin: 0 0 6px 0;
-  font-size: 1.08rem;
-  color: #222;
+.stock-tile .change-positive {
+  color: #16a34a; /* green */
+  font-weight: 700;
 }
 
-.stock-tile p {
-  margin: 2px 0;
-  color: #444;
-  font-size: 0.98rem;
+.stock-tile .change-negative {
+  color: #dc2626; /* red */
+  font-weight: 700;
 }
 
 .unauthorized-overlay {

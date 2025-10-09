@@ -508,29 +508,29 @@ function StockPage() {
       </Swiper>
       <ul>
         <div className="yesterday-data info-box">
-          <h3>Yesterday's Data</h3>
+          <h3>Stock Data</h3>
           <li>
-            <label>Yesterday's Date:</label>
+            <label>Date:</label>
             {yst_data.date}
           </li>
           <li>
-            <label>Yesterday's Close: </label>
+            <label>Close Price: </label>
             Rs.{formatNumber(yst_data.close)}
           </li>
           <li>
-            <label>Yesterday's High: </label>
+            <label>Today's High: </label>
             Rs.{formatNumber(yst_data.high)}
           </li>
           <li>
-            <label>Yesterday's Low: </label>
+            <label>Today's Low: </label>
             Rs.{formatNumber(yst_data.low)}
           </li>
           <li>
-            <label>Yesterday's Open: </label>
+            <label>Opened At: </label>
             Rs.{formatNumber(yst_data.open)}
           </li>
           <li>
-            <label>Yesterday's Volume: </label>
+            <label>Volume: </label>
             {formatNumber(yst_data.volume)}
           </li>
         </div>

@@ -152,7 +152,7 @@ function Watchlist() {
                 Start building your portfolio by adding stocks you want to
                 track.
               </p>
-              <a href="/search" className="browse-stocks-btn">
+              <a href="/" className="browse-stocks-btn">
                 Browse Stocks
               </a>
             </div>

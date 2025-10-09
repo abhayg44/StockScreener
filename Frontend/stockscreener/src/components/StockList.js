@@ -186,9 +186,25 @@ function StockList() {
               >
                 <Link to={`/stock/${stock["ticker"]}`}>
                   <h3>{stock["name"]}</h3>
-                  <p>Close: ${stock["close"]}</p>
-                  <p>Change: ${stock["change"]}</p>
-                  <p>Change Percentage: {stock["pct_change"]}%</p>
+                  <p>Close: ₹{stock["close"]}</p>
+                  {stock["change"] < 0 ? (
+                    <p className="change-negative">
+                      Change: -₹{Math.abs(stock["change"])}
+                    </p>
+                  ) : (
+                    <p className="change-positive">
+                      Change: ₹{stock["change"]}
+                    </p>
+                  )}
+                  {stock["pct_change"] < 0 ? (
+                    <p className="change-negative">
+                      Change Percentage: -{Math.abs(stock["pct_change"])}%
+                    </p>
+                  ) : (
+                    <p className="change-positive">
+                      Change Percentage: {stock["pct_change"]}%
+                    </p>
+                  )}
                 </Link>
               </div>
             );
@@ -214,10 +230,23 @@ function StockList() {
             >
               <Link to={`/stock/${stock["ticker"]}`}>
                 <h3>{stock["name"]}</h3>
-                <p>ma50-ma200 based score: {stock["score"]}</p>
-                <p>Close: ${stock["close"]}</p>
-                <p>Change: ${stock["change"]}</p>
-                <p>Change Percentage: {stock["pct_change"]}%</p>
+                <p>Close: ₹{stock["close"]}</p>
+                {stock["change"] < 0 ? (
+                  <p className="change-negative">
+                    Change: -₹{Math.abs(stock["change"])}
+                  </p>
+                ) : (
+                  <p className="change-positive">Change: ₹{stock["change"]}</p>
+                )}
+                {stock["pct_change"] < 0 ? (
+                  <p className="change-negative">
+                    Change Percentage: -{Math.abs(stock["pct_change"])}%
+                  </p>
+                ) : (
+                  <p className="change-positive">
+                    Change Percentage: {stock["pct_change"]}%
+                  </p>
+                )}{" "}
               </Link>
             </div>
           ))}
@@ -242,10 +271,23 @@ function StockList() {
             >
               <Link to={`/stock/${stock["ticker"]}`}>
                 <h3>{stock["name"]}</h3>
-                <p>ma50-ma200 based score: {stock["score"]}</p>
-                <p>Close: ${stock["close"]}</p>
-                <p>Change: ${stock["change"]}</p>
-                <p>Change Percentage: {stock["pct_change"]}%</p>
+                <p>Close: ₹{stock["close"]}</p>
+                {stock["change"] < 0 ? (
+                  <p className="change-negative">
+                    Change: -₹{Math.abs(stock["change"])}
+                  </p>
+                ) : (
+                  <p className="change-positive">Change: ₹{stock["change"]}</p>
+                )}
+                {stock["pct_change"] < 0 ? (
+                  <p className="change-negative">
+                    Change Percentage: -{Math.abs(stock["pct_change"])}%
+                  </p>
+                ) : (
+                  <p className="change-positive">
+                    Change Percentage: {stock["pct_change"]}%
+                  </p>
+                )}{" "}
               </Link>
             </div>
           ))}
@@ -270,10 +312,23 @@ function StockList() {
             >
               <Link to={`/stock/${stock["ticker"]}`}>
                 <h3>{stock["name"]}</h3>
-                <p>ma50-ma200 based score: {stock["score"]}</p>
-                <p>Close: ${stock["close"]}</p>
-                <p>Change: ${stock["change"]}</p>
-                <p>Change Percentage: {stock["pct_change"]}%</p>
+                <p>Close: ₹{stock["close"]}</p>
+                {stock["change"] < 0 ? (
+                  <p className="change-negative">
+                    Change: -₹{Math.abs(stock["change"])}
+                  </p>
+                ) : (
+                  <p className="change-positive">Change: ₹{stock["change"]}</p>
+                )}
+                {stock["pct_change"] < 0 ? (
+                  <p className="change-negative">
+                    Change Percentage: -{Math.abs(stock["pct_change"])}%
+                  </p>
+                ) : (
+                  <p className="change-positive">
+                    Change Percentage: {stock["pct_change"]}%
+                  </p>
+                )}{" "}
               </Link>
             </div>
           ))}

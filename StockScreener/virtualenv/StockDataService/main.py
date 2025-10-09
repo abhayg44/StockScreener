@@ -1,7 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from StockDataService.DataHandler.historicDataProducer import get_historic_data
+from DataHandler.historicDataProducer import get_historic_data
 import asyncio
 import os
 from dotenv import load_dotenv

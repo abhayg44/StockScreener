@@ -1,11 +1,17 @@
 import pika
+import os
 from Screener.run import executing_all_strategy_run
 from DataHandler.resultProducer import publish_result_rabbitmq
 
 data={}
 def start_consumer():
   print("Python ready and waiting for messages...")
-  connection=pika.BlockingConnection(pika.ConnectionParameters('localhost',port=5672))
+  rabbitmq_url=os.getenv("RABBITMQ_URL")
+  print("rabbit mq url is ",rabbitmq_url)
+  if not rabbitmq_url:
+    raise ValueError("RABBITMQ_URL not found in environment variables")
+  params=pika.URLParameters(rabbitmq_url)
+  connection=pika.BlockingConnection(params)
   channel=connection.channel()
   channel.queue_declare(queue='stock_screener_run_queue',durable=True)
   channel.queue_declare(queue="final_stock_screener_result",durable=True)
