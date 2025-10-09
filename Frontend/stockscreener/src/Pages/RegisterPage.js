@@ -1,35 +1,37 @@
 import { useState } from "react";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { app } from "../services/Firebase";
+import axios from "axios";
 import "./RegisterPage.css";
 
-function RegisterPage() {
+function RegisterPage(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSignup, setIsSignup] = useState(false);
   const [name, setName] = useState("");
+  const [unauthorized, setUnauthorized] = useState(true);
   const navigate = useNavigate();
 
-  const auth = getAuth(app);
-
+  const loginURL = process.env.REACT_APP_NODE_LOGIN_URL;
+  const signupURL = process.env.REACT_APP_NODE_SIGNUP_URL;
+  console.log("login url is ", loginURL);
+  console.log("signup url is ", signupURL);
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      const res = await axios.post(loginURL, {
+        email,
+        password,
+      });
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      props.setUser(res.data.user);
+      setUnauthorized(false);
+      navigate("/", { state: { unauthorized: false } });
     } catch (err) {
-      if (err.code === "auth/invalid-credential") {
-        setError("User not found. Please sign up");
-      } else {
-        setError(err.message);
-      }
+      console.log(err.response);
+      setError(err.response.data.message || err.message);
     }
   };
 
@@ -37,81 +39,85 @@ function RegisterPage() {
     e.preventDefault();
     setError("");
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      const res = await axios.post(signupURL, {
+        name: name,
+        email: email,
+        password: password,
+      });
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      props.setUser(res.data.user);
+      setUnauthorized(false);
+      navigate("/", { state: { unauthorized: false } });
     } catch (err) {
-      if (err.code === "auth/email-already-in-use") {
-        setError("Email already in use. Please login.");
-      } else if (err.code === "auth/invalid-credentials") {
-        setError("Invalid credentials. Please try again.");
-      } else {
-        setError(err.message);
-      }
+      setError(err.response.data.message || err.message);
     }
   };
 
   return (
-    <div className="login-container">
-      <div>
-        <h2>{isSignup ? "Sign Up" : "Login"}</h2>
-        <form onSubmit={isSignup ? handleSignup : handleLogin}>
-          {isSignup ? (
+    <div>
+      <div className="login-container">
+        <div>
+          <h2>{isSignup ? "Sign Up" : "Login"}</h2>
+          <form onSubmit={isSignup ? handleSignup : handleLogin}>
+            {isSignup ? (
+              <input
+                type="name"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            ) : null}
+
             <input
-              type="name"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
-          ) : null}
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit">{isSignup ? "Sign Up" : "Login"}</button>
-        </form>
-        {error && <p>{error}</p>}
-        <div style={{ marginTop: "18px", fontSize: "0.97rem" }}>
-          {isSignup ? (
-            <>
-              Already have an account?{" "}
-              <span
-                style={{
-                  color: "#1976d2",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-                onClick={() => setIsSignup(false)}
-              >
-                Login
-              </span>
-            </>
-          ) : (
-            <>
-              Don't have an account?{" "}
-              <span
-                style={{
-                  color: "#1976d2",
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                }}
-                onClick={() => setIsSignup(true)}
-              >
-                Sign Up
-              </span>
-            </>
-          )}
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button type="submit">{isSignup ? "Sign Up" : "Login"}</button>
+          </form>
+          {error && <p>{error}</p>}
+          <div style={{ marginTop: "18px", fontSize: "0.97rem" }}>
+            {isSignup ? (
+              <>
+                Already have an account?{" "}
+                <span
+                  style={{
+                    color: "#1976d2",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => setIsSignup(false)}
+                >
+                  Login
+                </span>
+              </>
+            ) : (
+              <>
+                Don't have an account?{" "}
+                <span
+                  style={{
+                    color: "#1976d2",
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                  }}
+                  onClick={() => setIsSignup(true)}
+                >
+                  Sign Up
+                </span>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
