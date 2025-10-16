@@ -19,7 +19,7 @@
   font-size: 1.08rem;
 }
 
-.profile-container input[type="name"] {
+.profile-container input[type="text"] {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;

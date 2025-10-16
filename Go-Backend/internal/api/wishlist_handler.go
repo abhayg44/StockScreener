@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/STOCKSCREENER/Go-Backend/internal/models"
@@ -14,7 +13,7 @@ import (
 )
 
 // Fetch wishlist data from Mongo
-func GetWishlistDataJob(userId int) ([]models.WishlistData, error) {
+func GetWishlistDataJob(userId string) ([]models.WishlistData, error) {
 	services.InitMongo(MongoURL)
 	collection := services.GetMongoCollection("stock", "wishlist")
 
@@ -36,7 +35,7 @@ func GetWishlistDataJob(userId int) ([]models.WishlistData, error) {
 }
 
 // Store wishlist data in Mongo
-func StoreWishlistDataJob(wishlist models.WishlistData,userId int) (success string,err error) {
+func StoreWishlistDataJob(wishlist models.WishlistData,userId string) (success string,err error) {
 	services.InitMongo(MongoURL)
 	if wishlist.Ticker == "" || wishlist.Name == "" || wishlist.ClosePrice == 0 {
 		return "", fmt.Errorf("Invalid wishlist data")
@@ -70,7 +69,7 @@ fmt.Println("Existing wishlist item:", existingWishlist)
 
 
 //Delte wishlist data in Mongo
-func DeleteWishlistDataJob(userId int,ticker string) (error) {
+func DeleteWishlistDataJob(userId string,ticker string) (error) {
 	services.InitMongo(MongoURL)
 	collection := services.GetMongoCollection("stock", "wishlist")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -83,9 +82,9 @@ func DeleteWishlistDataJob(userId int,ticker string) (error) {
 }
 
 func DeleteWishlistData(w http.ResponseWriter, r *http.Request) {
-	userId, err := strconv.Atoi(r.URL.Query().Get("user_id"))
-	
-	if err != nil {
+	userId := r.URL.Query().Get("user_id")
+
+	if userId == "" {
 		http.Error(w, "Invalid user_id", http.StatusBadRequest)
 		return
 	}
@@ -96,8 +95,7 @@ func DeleteWishlistData(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println("Deleting wishlist item for user_id:", userId, "ticker:", ticker)
 
-	err = DeleteWishlistDataJob(userId,ticker)
-	if err != nil {
+	if err := DeleteWishlistDataJob(userId,ticker); err != nil {
 		http.Error(w, "Failed to delete wishlist item", http.StatusInternalServerError)
 		return
 	}
@@ -114,19 +112,20 @@ func DeleteWishlistData(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetIsWishlistData(w http.ResponseWriter, r *http.Request) {
-	userId, err := strconv.Atoi(r.URL.Query().Get("user_id"))
-	if err != nil {
+	userId := r.URL.Query().Get("user_id")
+	if userId == "" {
 		response:=models.ResponseStruct{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid user_id",
-			Error: 	 err.Error(),
-			Data: 		nil,
+			Error: 	 "Invalid user_id",
+			Data: nil,
 		}
 		if err := json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		}
 		return
 	}
+
 	ticker := r.URL.Query().Get("ticker")
 	if ticker == "" {
 		response:=models.ResponseStruct{
@@ -147,7 +146,7 @@ func GetIsWishlistData(w http.ResponseWriter, r *http.Request) {
 	var existingWishlist models.WishlistData
 
 	// Check if the wishlist item already exists
-	err = collection.FindOne(ctx, bson.M{"user_id": userId, "ticker": ticker}).Decode(&existingWishlist)
+	err := collection.FindOne(ctx, bson.M{"user_id": userId, "ticker": ticker}).Decode(&existingWishlist)
 	if err != nil {
 		//check if the error is due to no documents found
 		if err.Error() == "mongo: no documents in result" {
@@ -187,12 +186,12 @@ func GetIsWishlistData(w http.ResponseWriter, r *http.Request) {
 
 // GET wishlist handler
 func GetWishlistData(w http.ResponseWriter, r *http.Request) {
-	userId, err := strconv.Atoi(r.URL.Query().Get("user_id"))
-	if err != nil {
-		response:=models.ResponseStruct{
+	userId := r.URL.Query().Get("user_id")
+	if userId == "" {
+		response := models.ResponseStruct{
 			StatusCode: http.StatusBadRequest,
 			Message:    "Invalid user_id",
-			Error:     err.Error(),
+			Error:     "Invalid user_id",
 			Data:      nil,
 		}
 		if err := json.NewEncoder(w).Encode(response); err != nil {
@@ -232,14 +231,14 @@ func GetWishlistData(w http.ResponseWriter, r *http.Request) {
 // POST wishlist handler
 func StoreWishlistData(w http.ResponseWriter, r *http.Request) {
     var wishlist models.WishlistData
-    userId, err := strconv.Atoi(r.URL.Query().Get("user_id"))
-    if err != nil {
+    userId := r.URL.Query().Get("user_id")
+    if userId == "" {
         w.Header().Set("Content-Type", "application/json")
         w.WriteHeader(http.StatusBadRequest)
         response := models.ResponseStruct{
             StatusCode: http.StatusBadRequest,
             Message:    "Invalid user_id",
-            Error:      err.Error(),
+            Error:      "user_id is required",
             Data:       nil,
         }
         json.NewEncoder(w).Encode(response)

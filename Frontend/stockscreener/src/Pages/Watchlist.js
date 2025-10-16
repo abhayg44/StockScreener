@@ -11,15 +11,15 @@ function Watchlist() {
 
   useEffect(() => {
     setIsLoading(true);
-    const userString = localStorage.getItem("user");
+    const userObject = localStorage.getItem("user");
     const token = localStorage.getItem("token");
-    if (!userString || !token) {
+    if (!userObject || !token) {
       setIsLoading(false);
       setUnauthorized(true);
       localStorage.removeItem("token");
       localStorage.removeItem("user");
     } else {
-      const userId = JSON.parse(userString).id;
+      const userId = JSON.parse(userObject).id;
 
       const fetchWishlist = async () => {
         try {

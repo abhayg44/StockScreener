@@ -35,5 +35,5 @@ RUN find . -type d -exec touch {}/__init__.py \; 2>/dev/null || true
 ENV PYTHONPATH="${PYTHONPATH}:/app"
 ENV FLASK_APP=main.py
 
-EXPOSE 5000
+EXPOSE 8081
 CMD ["python", "main.py"]

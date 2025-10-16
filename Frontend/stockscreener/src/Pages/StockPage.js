@@ -435,8 +435,10 @@ function StockPage() {
             <FaMoneyBillWave style={{ color: "#2d35cc", marginRight: 8 }} />
             Net Income
           </h3>
-          {growth_data.net_income && (
+          {growth_data.net_income ? (
             <Bar data={getBarData(growth_data.net_income, "Net Income")} />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
         <SwiperSlide>
@@ -444,8 +446,10 @@ function StockPage() {
             <FaChartBar style={{ color: "#2d35cc", marginRight: 8 }} />
             EBITDA
           </h3>
-          {growth_data.ebitda && (
+          {growth_data.ebitda ? (
             <Bar data={getBarData(growth_data.ebitda, "EBITDA")} />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
         <SwiperSlide>
@@ -453,13 +457,15 @@ function StockPage() {
             <FaBalanceScale style={{ color: "#2d35cc", marginRight: 8 }} />
             Operating Income
           </h3>
-          {growth_data.operating_income && (
+          {growth_data.operating_income ? (
             <Bar
               data={getBarData(
                 growth_data.operating_income,
                 "Operating Income"
               )}
             />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
         <SwiperSlide>
@@ -467,8 +473,10 @@ function StockPage() {
             <FaPiggyBank style={{ color: "#2d35cc", marginRight: 8 }} />
             Total Assets
           </h3>
-          {growth_data.total_assets && (
+          {growth_data.total_assets ? (
             <Bar data={getBarData(growth_data.total_assets, "Total Assets")} />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
         <SwiperSlide>
@@ -476,13 +484,15 @@ function StockPage() {
             <FaCoins style={{ color: "#2d35cc", marginRight: 8 }} />
             Total Liabilities
           </h3>
-          {growth_data.total_liabilities && (
+          {growth_data.total_liabilities ? (
             <Bar
               data={getBarData(
                 growth_data.total_liabilities,
                 "Total Liabilities"
               )}
             />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
         <SwiperSlide>
@@ -490,8 +500,10 @@ function StockPage() {
             <FaWallet style={{ color: "#2d35cc", marginRight: 8 }} />
             Net Worth
           </h3>
-          {growth_data.networth && (
+          {growth_data.networth ? (
             <Bar data={getBarData(growth_data.networth, "Net Worth")} />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
         <SwiperSlide>
@@ -499,10 +511,12 @@ function StockPage() {
             <FaCashRegister style={{ color: "#2d35cc", marginRight: 8 }} />
             Free Cash Flow
           </h3>
-          {growth_data.free_cash_flow && (
+          {growth_data.free_cash_flow ? (
             <Bar
               data={getBarData(growth_data.free_cash_flow, "Free Cash Flow")}
             />
+          ) : (
+            <p>No data available</p>
           )}
         </SwiperSlide>
       </Swiper>

@@ -5,39 +5,49 @@ import "./Profile.css";
 import { useNavigate } from "react-router-dom";
 
 const Profile = (props) => {
+  const [errorMsg, setErrorMsg] = useState("");
   const [profile, setProfile] = useState(null);
   const [newName, setNewName] = useState("");
   const [nameChange, setNameChange] = useState(false);
   const token = props.token;
-  const Nagivate = useNavigate();
+  const Navigate = useNavigate();
 
   const handleNameChange = async () => {
-    const res = await axios.put(
-      "http://localhost:5000/profile",
-      {
-        name: newName,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    if (newName === profile.name) {
+      setErrorMsg("Please enter a new name");
+      return;
+    }
+    try {
+      const res = await axios.put(
+        process.env.REACT_APP_NODE_PROFILE_URL,
+        {
+          name: newName,
         },
-      }
-    );
-    setProfile(res.data.user);
-    setNameChange(false);
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setProfile(res.data.user);
+      setNameChange(false);
+      setErrorMsg("");
+    } catch (err) {
+      setErrorMsg(err.response.data.message || err.message);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     props.setUser(null);
-    Nagivate("/register");
+    Navigate("/register");
   };
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/profile", {
+        const res = await axios.get(process.env.REACT_APP_NODE_PROFILE_URL, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,26 +69,23 @@ const Profile = (props) => {
       <h3>Welcome {profile.name}</h3>
       <p>Email: {profile.email}</p>
       {nameChange ? (
-        <button onClick={handleNameChange}>Change Name</button>
+        <>
+          <input
+            type="text"
+            placeholder="Enter new name"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            required
+          />
+          <button onClick={handleNameChange}>Change Name</button>
+          {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+        </>
       ) : (
-        <button
-          onClick={() => {
-            setNameChange(!nameChange);
-          }}
-        >
+        <button onClick={() => setNameChange(true)}>
           Click To Change Name
         </button>
       )}
-      {nameChange ? (
-        <input
-          type="name"
-          placeholder="Enter new name"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-          required
-        />
-      ) : null}
-      <button onClick={handleLogout}>Logout</button>
+      {nameChange ? null : <button onClick={handleLogout}>Logout</button>}
     </div>
   );
 };

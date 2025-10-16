@@ -14,8 +14,7 @@ function RegisterPage(props) {
 
   const loginURL = process.env.REACT_APP_NODE_LOGIN_URL;
   const signupURL = process.env.REACT_APP_NODE_SIGNUP_URL;
-  console.log("login url is ", loginURL);
-  console.log("signup url is ", signupURL);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");

@@ -11,7 +11,7 @@ import (
 )
 func main() {
 	c := cors.New(cors.Options{
-    AllowedOrigins:   []string{"http://localhost:3000"},
+    AllowedOrigins:   []string{"http://localhost:5000"},
     AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowedHeaders:   []string{"Content-Type", "Authorization"},
     AllowCredentials: true,
@@ -40,7 +40,6 @@ func main() {
 	router.HandleFunc("POST /stock/refresh-stock-data", api.RefreshCurrentStockData)
 
 	router.HandleFunc("/stock/", api.StockDataHandler)
-	fmt.Println("WebSocket server started on ws://localhost:3000/stock")
 	
 	router.HandleFunc("POST /stock/wishlist", api.StoreWishlistData)
 

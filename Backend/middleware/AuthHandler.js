@@ -11,6 +11,7 @@ const AuthHandler = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded message is ", decoded);
     req.user = { userId: decoded.id };
     console.log("userId is ", req.user.userId);
     next();

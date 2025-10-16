@@ -5,7 +5,7 @@ import (
 )
 
 type WishlistData struct {
-    UserID     int       `json:"user_id" bson:"user_id"`
+    UserID     string       `json:"user_id" bson:"user_id"`
     Ticker     string    `json:"ticker" bson:"ticker"`
     Name       string    `json:"name" bson:"name"`
     ClosePrice float64   `json:"close_price" bson:"close_price"`

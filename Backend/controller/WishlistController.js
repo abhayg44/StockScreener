@@ -4,6 +4,7 @@ const getWishlistData = async (req, res) => {
   try {
     console.log("Fetching wishlist data...");
     const userId = req.query.user_id;
+    console.log("query is ", req.query.user_id);
     if (!userId) {
       return res.status(400).json({
         message: "Bad Request",
