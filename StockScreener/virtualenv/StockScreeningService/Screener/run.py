@@ -23,12 +23,23 @@ def fetch_data():
 
   df = pd.read_csv(StringIO(resp.text))  #convert the string values to CSV 
   company_names = df[['Company Name','Symbol']]
-  yf_tickers = df['Symbol'].apply(lambda x: x + ".NS").tolist()  #append .NS to each ticker
+  
+  mask_dummy=company_names['Symbol'].str.contains('DUMMY',case=False)
+  if mask_dummy.any():
+    skipped=company_names[mask_dummy]
+    print("Skipping DUMMY entries: ",skipped)
+    company_names=company_names[~mask_dummy]
+  
+  yf_tickers = company_names['Symbol'].apply(lambda x: x + ".NS").tolist()  
 
   start_date=datetime.now() - timedelta(days=365)
   end_date=datetime.now()
 
   data=yf.download(yf_tickers, start=start_date, end=end_date, group_by="ticker")  #download the historical data for the tickers
+  if data is None or data.empty:
+      print(f"safe_download: failed for {ticker}: {e}")
+      return None
+  print("data is --------------------------------------",data,"\n",yf_tickers,"\n",company_names)
   return data, yf_tickers, company_names
 
 def company_ticker_to_name(yf_tickers,company_names):
