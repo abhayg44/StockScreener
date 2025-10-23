@@ -17,13 +17,13 @@ function App() {
           if (res.status === 401) {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
-            window.location.href = "/login";
+            window.location.href = "/";
           }
         })
         .catch(() => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          window.location.href = "/login";
+          window.location.href = "/";
         });
     }
   }, []);

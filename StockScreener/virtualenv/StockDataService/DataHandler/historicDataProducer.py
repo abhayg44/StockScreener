@@ -8,11 +8,9 @@ def safe_val(v):
     return v
 
 def get_latest_n(df, key, n=3):
-    # df: pandas DataFrame, key: column name, n: number of periods
     if key not in df.index:
         return []
     vals = df.loc[key].dropna().tail(n)
-    # Use index as date, value as value
     return [
         {
             "date": str(idx.date()) if hasattr(idx, "date") else str(idx),
@@ -67,8 +65,6 @@ def get_historic_data(ticker: str, period: str="90d", interval: str = "1d"):
 
     free_cash_flow = get_latest_n(cf_df, "Free Cash Flow")
 
-
-    # For balance_sheet, you can use total_assets or networth as needed
 
     growth_data = {
         "net_income": net_income,
