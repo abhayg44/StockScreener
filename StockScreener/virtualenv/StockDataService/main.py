@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Query
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from DataHandler.historicDataProducer import get_stock_diary_data
 from DataHandler.historicDataProducer import get_historic_data
 import logging
 import traceback
@@ -67,7 +68,7 @@ async def stock_diary_handler(
 ):
     logging.info("Incoming request Origin: %s", request.headers.get("origin"))
     try:
-        res = get_historic_data(ticker, entry, exit)
+        res = get_stock_diary_data(ticker, entry, exit)
 
         if not isinstance(res, dict):
             logger.error("diary data returned non-dict: %s", type(res))
