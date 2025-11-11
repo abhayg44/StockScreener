@@ -1,0 +1,144 @@
+/* General form styling */
+.stock-diary-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  align-self: center;
+}
+
+/* Form title */
+.stock-diary-form h3 {
+  text-align: center;
+  color: #2d35cc;
+  margin-bottom: 12px;
+}
+
+/* Labels */
+.stock-diary-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.form-error {
+  color: red;
+  font-size: 13px !important;
+}
+
+/* Input fields */
+.stock-diary-form input,
+.stock-diary-form textarea,
+.stock-diary-form .react-datepicker-wrapper input {
+  margin-top: 5px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1.5px solid #cfd3f7;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  color: #222;
+  font-family: inherit;
+}
+
+/* Focus effect */
+.stock-diary-form input:focus,
+.stock-diary-form textarea:focus,
+.stock-diary-form .react-datepicker-wrapper input:focus {
+  border-color: #2d35cc;
+  box-shadow: 0 0 0 3px rgba(45, 53, 204, 0.15);
+}
+
+/* Textarea */
+.stock-diary-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Save button */
+.stock-diary-form button[type="submit"] {
+  background-color: #2d35cc;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+}
+
+.stock-diary-form button[type="submit"]:hover {
+  background-color: #1b24a0;
+}
+
+/* DateTimePicker wrapper */
+.stock-diary-form .circular-time-picker {
+  margin-top: 6px;
+}
+
+/* react-datepicker overrides */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.react-datepicker__time-container {
+  border-left: 1px solid #e6e8fa !important;
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: rgba(45, 53, 204, 0.1) !important;
+  color: #2d35cc !important;
+}
+
+.react-datepicker__time-list-item--selected {
+  background-color: #2d35cc !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+}
+
+/* Calendar popup styling */
+.react-datepicker__calendar {
+  border-radius: 12px;
+  border: 1px solid #e5e7fa;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #2d35cc !important;
+  color: #fff !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: rgba(45, 53, 204, 0.1) !important;
+  color: #2d35cc !important;
+}
+
+.react-datepicker__header {
+  background-color: #f5f7ff !important;
+  border-bottom: none !important;
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.react-datepicker__current-month {
+  color: #2d35cc !important;
+  font-weight: 600 !important;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #2d35cc !important;
+}

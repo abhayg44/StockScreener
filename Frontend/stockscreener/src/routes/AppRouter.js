@@ -4,6 +4,8 @@ import RegisterPage from "../Pages/RegisterPage";
 import Watchlist from "../Pages/Watchlist";
 import Profile from "../Pages/Profile";
 import StockPage from "../Pages/StockPage";
+import StockDiary from "../Pages/StockDiary";
+import StockDiaryPage from "../Pages/StockDiaryPage";
 
 function AppRoutes(props) {
   return (
@@ -29,6 +31,8 @@ function AppRoutes(props) {
         setUser={props.setUser}
         element={<StockPage />}
       />
+      <Route path="/stockdiary" element={<StockDiary />} />
+      <Route path="/stockdiary/:id" element={<StockDiaryPage />} />
     </Routes>
   );
 }

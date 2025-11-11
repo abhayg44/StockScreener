@@ -11,7 +11,7 @@ import (
 )
 func main() {
 	c := cors.New(cors.Options{
-    AllowedOrigins:   []string{"http://localhost:5000"},
+    AllowedOrigins:   []string{"http://localhost:5000","https://backend-image-jwy6.onrender.com"},
     AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowedHeaders:   []string{"Content-Type", "Authorization"},
     AllowCredentials: true,
@@ -49,6 +49,17 @@ func main() {
 
 	router.HandleFunc("DELETE /stock/wishlist", api.DeleteWishlistData)
 
+	// router.HandleFunc("GET /stockdiary", api.GetStockDiaryEntryHandler)
+
+	router.HandleFunc("GET /stockdiary", api.GetStockDiaryPaginationHandler)
+
+	router.HandleFunc("POST /stockdiary", api.StoreStockDiaryEntryHandler)
+
+	router.HandleFunc("GET /stockdiary/{id}",api.GetParticularStockDiaryEntryHandler)
+
+	router.HandleFunc("PUT /stockdiary/{id}", api.EditStockDiaryEntryHandler)
+
+	router.HandleFunc("DELETE /stockdiary/{id}", api.DeleteStockDiaryEntryHandler)
 
 	srv := &http.Server{
 		Addr:    config.Addr,

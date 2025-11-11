@@ -5,6 +5,14 @@ from Screener.run import executing_all_strategy_run
 
 app=FastAPI()
 
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'OK',
+        'message': 'Your API is running',
+        'timestamp': datetime.utcnow().isoformat()
+    })
+    
 @app.get("/")
 def home():
   return {"message":"started screening service at 8081 port"}

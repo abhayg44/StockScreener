@@ -1,0 +1,119 @@
+:root{
+  --bg: #ffffff;
+  --muted: #6b7280;
+  --danger: #ef4444;
+  --danger-dark: #c92a2a;
+  --accent: #0b5fff;
+  --border: #e6eaef;
+  --shadow: 0 10px 30px rgba(12,18,26,0.08);
+  --radius: 12px;
+  --gap: 14px;
+  --pad: 18px;
+  --font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* root card */
+.delete-dialogue{
+  width: min(520px, 92%);
+  max-width: 520px;
+  margin: 24px auto;
+  background: linear-gradient(180deg, var(--bg), #fbfdff);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: calc(var(--pad) - 4px);
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  color: #0b1722;
+  animation: dd-pop .14s ease-out;
+}
+
+/* inner spacing */
+.delete-dialogue .dd-inner{
+  padding: var(--pad);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  align-items: stretch;
+}
+
+/* title and message */
+.delete-dialogue h3{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.delete-dialogue .dd-desc{
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* actions row */
+.delete-dialogue .dd-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* base button style */
+.delete-dialogue .btn{
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform .08s ease, box-shadow .08s ease, background .08s ease;
+  min-width: 84px;
+}
+
+/* cancel button */
+.delete-dialogue .cancel-btn{
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.delete-dialogue .cancel-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(12,18,26,0.04);
+}
+
+/* delete button */
+.delete-dialogue .delete-btn{
+  background: linear-gradient(180deg, var(--danger), var(--danger-dark));
+  color: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 8px 20px rgba(239,68,68,0.12);
+}
+.delete-dialogue .delete-btn:hover{
+  transform: translateY(-1px);
+  filter: brightness(.98);
+}
+
+/* focus styles for accessibility */
+.delete-dialogue .btn:focus{
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(11,95,255,0.12);
+}
+
+/* responsive tweaks */
+@media (max-width: 480px){
+  .delete-dialogue{
+    margin: 16px;
+    padding: 12px;
+  }
+  .delete-dialogue .dd-actions{
+    justify-content: stretch;
+    flex-direction: column-reverse;
+  }
+  .delete-dialogue .btn{ width: 100%; min-width: auto; }
+}
+
+/* subtle entrance */
+@keyframes dd-pop{
+  from { transform: translateY(6px) scale(.995); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
