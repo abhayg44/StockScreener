@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/STOCKSCREENER/Go-Backend/internal/api"
 	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
@@ -58,6 +60,17 @@ func main() {
 	router.HandleFunc("GET /stockdiary/{id}",api.GetParticularStockDiaryEntryHandler)
 
 	router.HandleFunc("PUT /stockdiary/{id}", api.EditStockDiaryEntryHandler)
+
+	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]interface{}{
+			"status":    "OK",
+			"message":   "Your API is running",
+			"timestamp": time.Now().UTC().Format(time.RFC3339),
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	})
 
 	router.HandleFunc("DELETE /stockdiary/{id}", api.DeleteStockDiaryEntryHandler)
 
