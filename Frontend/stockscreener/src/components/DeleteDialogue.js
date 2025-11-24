@@ -24,7 +24,7 @@ function DeleteDialogue({ setIsDelete, setOutsideTap, id }) {
       }
       const result = await response.json();
       setLoading(false);
-      console.log("Deleted stock diary entry:", result);
+      // console.log("Deleted stock diary entry:", result);
     } catch (err) {
       setLoading(false);
       console.error("Error deleting stock diary entry:", err);

@@ -31,7 +31,7 @@ function StockDiaryInput({ onClose, onFormSubmit, submitHandler }) {
   };
 
   const handleSubmit = (e) => {
-    console.log("Submitting form");
+    // console.log("Submitting form");
     e.preventDefault();
     setErrorMessage("");
     const entryDateTime = handleDateTime(tempEntryDateTime);

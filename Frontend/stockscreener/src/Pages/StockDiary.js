@@ -14,11 +14,11 @@ function StockDiary() {
   const [totalCount, setTotalCount] = useState(null);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  console.log("rendering stock diary component");
+  // console.log("rendering stock diary component");
 
   useEffect(() => {
     if (Object.keys(formData).length > 0) {
-      console.log("Parent received form data:", formData);
+      // console.log("Parent received form data:", formData);
     }
   }, [formData]);
 
@@ -33,7 +33,7 @@ function StockDiary() {
     try {
       const base = process.env.REACT_APP_NODE_STOCKDIARY_URL;
       const url = `${base}?page=${p}&limit=${l}`;
-      console.log("fetchStockDiaryData url:", url);
+      // console.log("fetchStockDiaryData url:", url);
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -100,12 +100,12 @@ function StockDiary() {
         },
         body: JSON.stringify(data),
       });
-      console.log("response is ", response);
+      // console.log("response is ", response);
       if (!response.ok) {
         throw new Error("Failed to create stock diary entry");
       }
       const result = await response.json();
-      console.log("Created stock diary entry:", result);
+      // console.log("Created stock diary entry:", result);
       fetchStockDiaryData(page, limit);
     } catch (err) {
       console.error("Error creating stock diary entry:", err);

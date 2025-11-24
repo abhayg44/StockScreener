@@ -23,11 +23,11 @@ function Watchlist() {
 
       const fetchWishlist = async () => {
         try {
-          console.log(
-            "fetching data from url ",
-            process.env.REACT_APP_NODE_WISHLIST_URL + `?user_id=${userId}`
-          );
-          console.log("user id is ", userId);
+          // console.log(
+          //   "fetching data from url ",
+          //   process.env.REACT_APP_NODE_WISHLIST_URL + `?user_id=${userId}`
+          // );
+          // console.log("user id is ", userId);
 
           const response = await axios.get(
             process.env.REACT_APP_NODE_WISHLIST_URL + `?user_id=${userId}`,
@@ -38,8 +38,8 @@ function Watchlist() {
               },
             }
           );
-          console.log("response: is ", response);
-          console.log("response.data is ", response.data);
+          // console.log("response: is ", response);
+          // console.log("response.data is ", response.data);
           setIsLoading(false);
           if (response.data.error !== null) {
             setUnauthorized(true);

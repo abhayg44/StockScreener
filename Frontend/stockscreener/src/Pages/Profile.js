@@ -53,7 +53,7 @@ const Profile = (props) => {
           },
         });
         setProfile(res.data.user);
-        console.log("profile data is ", res.data);
+        // console.log("profile data is ", res.data);
       } catch (err) {
         console.log(err);
       }

@@ -12,7 +12,7 @@ const getProfile = asyncHandler(async (req, res) => {
     .select("*")
     .eq("id", userId)
     .single();
-  console.log("User result is ", userResult);
+  // console.log("User result is ", userResult);
   if (userError) {
     return res
       .status(500)
@@ -38,14 +38,14 @@ const editProfile = asyncHandler(async (req, res) => {
     .eq("id", userId)
     .select()
     .single();
-  console.log(
-    "Updated user result is ",
-    userResult,
-    " userid is ",
-    userId,
-    " name is ",
-    name
-  );
+  // console.log(
+  //   "Updated user result is ",
+  //   userResult,
+  //   " userid is ",
+  //   userId,
+  //   " name is ",
+  //   name
+  // );
   if (userError) {
     return res
       .status(500)

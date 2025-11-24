@@ -9,7 +9,7 @@ function App() {
   const [user, setUser] = useState(null);
   useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log(process.env.REACT_APP_NODE_TOKEN_VALIDATE_URL);
+    // console.log(process.env.REACT_APP_NODE_TOKEN_VALIDATE_URL);
     const handlerTokenValidation = async () => {
       if (token) {
         try {
@@ -20,7 +20,7 @@ function App() {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          console.log("response is ", response);
+          // console.log("response is ", response);
           if (response.status != 200) {
             localStorage.removeItem("token");
             localStorage.removeItem("user");
