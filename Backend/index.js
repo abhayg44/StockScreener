@@ -3,6 +3,8 @@ const ErrorHandler = require("./middleware/ErrorHandler");
 const cors = require("cors");
 const app = express();
 
+app.set("trust proxy", 1);
+
 const allowedOrigins = [
   "http://localhost:3000",
   "https://frontend-image-yb47.onrender.com",
