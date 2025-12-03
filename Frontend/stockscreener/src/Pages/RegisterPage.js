@@ -20,6 +20,7 @@ function RegisterPage(props) {
     setError("");
     try {
       // console.log("login url is ", loginURL);
+      // console.log("email is ", email, " password is ", password);
       const res = await axios.post(loginURL, {
         email,
         password,
