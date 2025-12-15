@@ -72,20 +72,18 @@ function StockPage() {
   const RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
   const MAX_CLICKS_PER_WINDOW = 5; // Maximum 5 clicks per minute
 
-  // Helper function to check if user exceeded rate limit
   const isRateLimited = () => {
     const now = Date.now();
     const timeSinceLastClick = now - lastClickTime;
 
     if (timeSinceLastClick > RATE_LIMIT_WINDOW) {
-      // Reset counter if window has passed
       setClickCount(1);
       setLastClickTime(now);
       return false;
     }
 
     if (clickCount >= MAX_CLICKS_PER_WINDOW) {
-      return true; // Rate limited
+      return true; 
     }
 
     setClickCount(clickCount + 1);
@@ -171,11 +169,15 @@ function StockPage() {
   useEffect(() => {
     fetchIsWishlisted(ticker);
     setIsLoading(true);
-    // console.log("url is ", httpUrl);
+    const url = `${process.env.REACT_APP_PYTHON_HISTORICAL_DATA_URL.replace(
+        "{ticker}",
+        ticker
+      )}?period=6mo&interval=1d`;
+    console.log("url is ", url);
     axios
-      .get(httpUrl)
+      .get(url)
       .then((response) => {
-        // console.log("historical data response is ", response.data);
+        console.log("historical data response is ", response.data);
         setName(response.data.name);
         setHist_data(response.data.historic_data);
         setFiftyTwoWeekHigh(response.data["52w_high"]);
@@ -233,7 +235,7 @@ function StockPage() {
             },
           }
         );
-        // console.log("Remove from watchlist response:", response);
+        console.log("Remove from watchlist response:", response);
         setIsBookmarked(false);
         setShowSplash(true);
         setTimeout(() => setShowSplash(false), 600);
@@ -273,7 +275,7 @@ function StockPage() {
             },
           }
         );
-        // console.log("Add to watchlist response:", response);
+        console.log("Add to watchlist response:", response);
         setIsBookmarked(true);
         setShowSplash(true);
         setTimeout(() => setShowSplash(false), 600);
@@ -314,7 +316,7 @@ function StockPage() {
       "{ticker}",
       ticker
     )}?period=${period}&interval=${interval}`;
-    // console.log("url is ", newUrl);
+    console.log("url is ", newUrl);
     setHttpUrl(newUrl);
   };
 
@@ -385,7 +387,6 @@ function StockPage() {
             onClick={() => {
               if (isBookmarkLoading) return;
 
-              // Check rate limit before processing
               if (!isBookmarked && isRateLimited()) {
                 alert(
                   "Too many requests. Please wait a moment before trying again."
@@ -396,6 +397,7 @@ function StockPage() {
               if (isBookmarked) {
                 handleRemoveFromWatchlist(ticker);
               } else {
+                if (hist_data.length < 2) return;
                 const change = Number(
                   (hist_data[0].price - hist_data[1].price).toFixed(2)
                 );
