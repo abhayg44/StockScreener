@@ -5,6 +5,24 @@ import time
 import logging
 import pandas as pd
 
+#In memory cache for historic data
+CACHE_TTL_SECONDS = 120
+_historic_cache = {}
+
+
+def _get_cache(key):
+    entry = _historic_cache.get(key)
+    if not entry:
+        return None
+    if time.time() - entry["ts"] > CACHE_TTL_SECONDS:
+        _historic_cache.pop(key, None)
+        return None
+    return entry["data"]
+
+
+def _set_cache(key, value):
+    _historic_cache[key] = {"ts": time.time(), "data": value}
+
 def safe_val(v):
     if isinstance(v, float) and np.isnan(v):
         return None
@@ -45,7 +63,6 @@ def get_stock_diary_data(ticker: str, entry_time: str, exit_time: str):
         end_dt = exit_dt + pd.Timedelta(minutes=5)
         total_hours = (end_dt - start_dt).total_seconds() / 3600
 
-        # Interval
         if total_hours <= 12:
             interval = "5m"
         elif total_hours <= 48:
@@ -58,7 +75,6 @@ def get_stock_diary_data(ticker: str, entry_time: str, exit_time: str):
         logging.info(f"Fetching {ticker} day-by-day from {start_dt} to {end_dt}, interval={interval}")
         ticker_obj = yf.Ticker(ticker)
 
-        # individual data
         all_parts = []
         day_cursor = start_dt.normalize()
         while day_cursor <= end_dt.normalize():
@@ -116,20 +132,26 @@ def get_stock_diary_data(ticker: str, entry_time: str, exit_time: str):
         return {"error": "internal_error", "message": str(e)}
     
 def get_historic_data(ticker: str, period: str="90d", interval: str="1d"):
-    def safe_call(func, *args, retries=3, **kwargs):
-        """Retry wrapper for yfinance calls."""
+    def safe_call(func, *args, retries=6, **kwargs):
+        base_delay = 1.5
         for attempt in range(retries):
             try:
                 return func(*args, **kwargs)
             except Exception as e:
                 if "Too Many Requests" in str(e):
-                    logging.warning(f"Rate limited by Yahoo API. Retrying in 2s... (attempt {attempt+1}/{retries})")
-                    time.sleep(2)
+                    delay = base_delay * (attempt + 1)
+                    logging.warning(
+                        f"Rate limited by Yahoo API. Backing off for {delay:.1f}s (attempt {attempt+1}/{retries})"
+                    )
+                    time.sleep(delay)
                 else:
                     raise e
         raise Exception("Too Many Requests after retries")
 
     try:
+        cache_key = (ticker, period, interval)
+        cached = _get_cache(cache_key)
+
         ticker_obj = yf.Ticker(ticker)
 
         hist = safe_call(ticker_obj.history, period=period, interval=interval)
@@ -181,7 +203,7 @@ def get_historic_data(ticker: str, period: str="90d", interval: str="1d"):
             logging.warning("No data available")
             info={}
 
-        return {
+        result = {
             "name": info.get("longName") or info.get("shortName") or ticker,
             "ticker": ticker,
             "historic_data": historic_data,
@@ -198,6 +220,16 @@ def get_historic_data(ticker: str, period: str="90d", interval: str="1d"):
             "website": info.get("website"),
         }
 
+        _set_cache(cache_key, result)
+        return result
+
     except Exception as e:
+        if "Too Many Requests" in str(e):
+            cached = _get_cache((ticker, period, interval))
+            if cached:
+                logging.warning("Rate limited upstream; serving cached historical data for %s", ticker)
+                cached = dict(cached)
+                cached["warning"] = "rate_limited_upstream_served_cache"
+                return cached
         logging.error(f"Error in get_historic_data: {e}")
         return {"error": "internal_error", "message": str(e)}

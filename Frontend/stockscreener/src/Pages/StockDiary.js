@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import StockDiaryInput from "../components/StockDiaryInput";
 import "./StockDiary.css";
 import { Link } from "react-router-dom";
+import { Atom } from "react-loading-indicators";
+
 
 function StockDiary() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,7 +57,6 @@ function StockDiary() {
         setData([]);
         setTotalPages(null);
         setTotalCount(null);
-        setLoading(false);
         return;
       }
 
@@ -158,6 +159,14 @@ function StockDiary() {
     for (let i = start; i <= end; i++) pages.push(i);
     return pages;
   };
+
+  if (loading){
+      return (
+        <div className="loading-overlay">
+          <Atom color="#2d35ccff" size="medium" text="" textColor="" />
+        </div>
+      );
+  }
 
   return (
     <div className="stock-diary-page">

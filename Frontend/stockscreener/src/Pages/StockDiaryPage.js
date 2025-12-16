@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import StockDiaryInput from "../components/StockDiaryInput";
+import { Atom } from "react-loading-indicators";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import { FiTrash2, FiEdit2 } from "react-icons/fi";
 import {
@@ -37,7 +38,8 @@ function StockDiaryPage() {
   const [stockData, setStockData] = useState([]);
   const [isDelete, setIsDelete] = useState(false);
   const [outsideTap, setOutsideTap] = useState(false);
-  const [stockLoading, setStockLoading] = useState(false);
+  const [stockLoading, setStockLoading] = useState(true);
+  const [stockFetched, setStockFetched] = useState(false);
   const [stockLoadTimeoutReached, setStockLoadTimeoutReached] = useState(false);
   const location = useLocation();
   const { ticker, entry, exit } = location.state || {};
@@ -47,7 +49,10 @@ function StockDiaryPage() {
   const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
-    if (!id || !ticker || !entry || !exit) return;
+    if (!id || !ticker || !entry || !exit) {
+      setStockLoading(false);
+      return;
+    }
     const load = async () => {
       await fetchStockDiaryEntryById(id);
       await fetchStockData(ticker, entry, exit);
@@ -65,26 +70,32 @@ function StockDiaryPage() {
 
     setStockLoading(true);
     setStockLoadTimeoutReached(false);
-
+    setStockFetched(false);
     try {
-      await sleep(2000);
       const response = await fetch(url);
       const resp = await response.json().catch(() => null);
 
       if (!response.ok || !resp) {
         console.error("Error fetching stock data:", response.status, resp);
         setStockData([]);
+        setStockLoadTimeoutReached(true);
+        setStockLoading(false);
+        setStockFetched(true);
         return;
       }
 
       const data = resp.data || resp;
       setStockData(Array.isArray(data) ? data : []);
+      setStockLoading(false);
+      setStockFetched(true);
     } catch (err) {
       console.error("Error fetching stock data:", err);
       setStockData([]);
-    } finally {
       setStockLoading(false);
-    }
+      setStockLoadTimeoutReached(true);
+      setStockFetched(true);
+
+    } 
   };
 
   const fetchStockDiaryEntryById = async (id) => {
@@ -135,7 +146,7 @@ function StockDiaryPage() {
       if (!response.ok) throw new Error("Failed to edit stock diary entry");
 
       const result = await response.json();
-      console.log("Edited stock diary entry:", result);
+      // console.log("Edited stock diary entry:", result);
       fetchStockDiaryEntryById(entryData.id);
       fetchStockData(entryData.stock_symbol, data.entry_time, data.exit_time);
     } catch (err) {
@@ -183,6 +194,14 @@ function StockDiaryPage() {
   };
 
   const handleDeleteDialogueOutsideClick = () => setOutsideTap(true);
+
+  if (stockLoading){
+      return (
+        <div className="loading-overlay">
+          <Atom color="#2d35ccff" size="medium" text="" textColor="" />
+        </div>
+      );
+  }
 
   return (
     <div className="stock-diary-page">
@@ -240,7 +259,7 @@ function StockDiaryPage() {
 
       {stockLoading ? (
         <div className="loading">Loading stock data...</div>
-      ) : stockData.length > 0 ? (
+      ) : stockFetched && !stockLoadTimeoutReached && stockData.length > 0 ? (
         <div className="main-chart-wrap">
           <Line
             data={closePriceChartData}
@@ -258,11 +277,13 @@ function StockDiaryPage() {
             }}
           />
         </div>
-      ) : (
+      ) : stockFetched ? (
         <p>
           No stock data available for the given Stock Symbol. (Please enter a
           valid stock symbol for yfinance)
         </p>
+      ) : (
+        <div className="loading">Loading stock data...</div>
       )}
 
       {entryData ? (
@@ -303,7 +324,7 @@ function StockDiaryPage() {
           </div>
         </div>
       ) : (
-        <p>Loading entry data...</p>
+        <p></p>
       )}
     </div>
   );

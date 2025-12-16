@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { OrbitProgress } from "react-loading-indicators";
+import { Atom } from "react-loading-indicators";
 import axios from "axios";
 import "./Profile.css";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ const Profile = (props) => {
   const [profile, setProfile] = useState(null);
   const [newName, setNewName] = useState("");
   const [nameChange, setNameChange] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const token = props.token;
   const Navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const Profile = (props) => {
       return;
     }
     try {
+      setIsLoading(true);
       const res = await axios.put(
         process.env.REACT_APP_NODE_PROFILE_URL,
         {
@@ -32,15 +34,19 @@ const Profile = (props) => {
       setProfile(res.data.user);
       setNameChange(false);
       setErrorMsg("");
+      setIsLoading(false);
     } catch (err) {
       setErrorMsg(err.response.data.message || err.message);
+      setIsLoading(false);
     }
   };
 
   const handleLogout = () => {
+    setIsLoading(true);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     props.setUser(null);
+    setIsLoading(false);
     Navigate("/register");
   };
 
@@ -61,8 +67,13 @@ const Profile = (props) => {
     if (token) fetchProfile();
   }, [token]);
 
-  if (!profile)
-    return <OrbitProgress color="#32cd32" size="medium" text="" textColor="" />;
+  if (isLoading || !profile) {
+      return (
+        <div className="loading-overlay">
+          <Atom color="#2d35ccff" size="medium" text="" textColor="" />
+        </div>
+      );
+    }
 
   return (
     <div className="profile-container">
