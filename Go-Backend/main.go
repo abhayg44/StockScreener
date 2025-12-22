@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/STOCKSCREENER/Go-Backend/internal/api"
 	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
@@ -11,7 +13,7 @@ import (
 )
 func main() {
 	c := cors.New(cors.Options{
-    AllowedOrigins:   []string{"http://localhost:5000"},
+    AllowedOrigins:   []string{"http://localhost:5000","https://backend-image-jwy6.onrender.com"},
     AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
     AllowedHeaders:   []string{"Content-Type", "Authorization"},
     AllowCredentials: true,
@@ -49,6 +51,28 @@ func main() {
 
 	router.HandleFunc("DELETE /stock/wishlist", api.DeleteWishlistData)
 
+	// router.HandleFunc("GET /stockdiary", api.GetStockDiaryEntryHandler)
+
+	router.HandleFunc("GET /stockdiary", api.GetStockDiaryPaginationHandler)
+
+	router.HandleFunc("POST /stockdiary", api.StoreStockDiaryEntryHandler)
+
+	router.HandleFunc("GET /stockdiary/{id}",api.GetParticularStockDiaryEntryHandler)
+
+	router.HandleFunc("PUT /stockdiary/{id}", api.EditStockDiaryEntryHandler)
+
+	http.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
+		response := map[string]interface{}{
+			"status":    "OK",
+			"message":   "Your API is running",
+			"timestamp": time.Now().UTC().Format(time.RFC3339),
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	})
+
+	router.HandleFunc("DELETE /stockdiary/{id}", api.DeleteStockDiaryEntryHandler)
 
 	srv := &http.Server{
 		Addr:    config.Addr,

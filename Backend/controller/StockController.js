@@ -14,7 +14,7 @@ const getStockData = async (req, res) => {
 
 const refreshStockData = async (req, res) => {
   try {
-    console.log("Refreshing stock data...");
+    // console.log("Refreshing stock data...");
     const goRes = await fetch(
       process.env.GO_BACKEND_URL + "/stock/refresh-stock-data",
       {
@@ -25,7 +25,7 @@ const refreshStockData = async (req, res) => {
       }
     );
     const data = await goRes.json();
-    console.log("Data from GO backend is ", data);
+    // console.log("Data from GO backend is ", data);
     if (goRes.status !== 200) {
       return res.status(500).json({
         message: "Failed to refresh stock data please try again later",

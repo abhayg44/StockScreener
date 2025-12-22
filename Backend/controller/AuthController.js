@@ -6,7 +6,7 @@ const supabase = require("../config/DbConfig");
 
 const signup = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
-  console.log("request body is", req.body);
+  // console.log("request body is", req.body);
   //check if user exists
   const { data: existingUser, error: userError } = await supabase
     .from("stock_screener_users")
@@ -14,7 +14,7 @@ const signup = asyncHandler(async (req, res) => {
     .eq("email", email)
     .single();
 
-  console.log("Data from supabase is ", existingUser);
+  // console.log("Data from supabase is ", existingUser);
 
   if (existingUser) {
     return res.status(400).json({ message: "User already exists" });
@@ -30,7 +30,7 @@ const signup = asyncHandler(async (req, res) => {
     .select("id, email")
     .single();
 
-  console.log("New user data is ", newUser);
+  // console.log("New user data is ", newUser);
 
   if (insertError) {
     return res
@@ -56,7 +56,7 @@ const login = asyncHandler(async (req, res) => {
     .eq("email", email)
     .single();
 
-  console.log("User data from supabase is ", user);
+  // console.log("User data from supabase is ", user);
   if (userError) {
     if (userError.details == "The result contains 0 rows") {
       return res.status(400).json({ message: "Account does not exist" });

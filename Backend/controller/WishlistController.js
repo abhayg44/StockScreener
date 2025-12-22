@@ -41,7 +41,7 @@ const getWishlistData = async (req, res) => {
     if (wishlistData.statusCode !== 200) {
       console.log("Error response:", wishlistData.error);
       return res.status(wishlistData.statusCode).json({
-        message: `Failed to fetch wishlist data in node side: ${wishlistData.message}`,
+        message: `Failed to fetch wishlist data in golang side: ${wishlistData.message}`,
         status: wishlistData.statusCode,
         data: null,
         error: wishlistData.error,

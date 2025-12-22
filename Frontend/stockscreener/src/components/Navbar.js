@@ -32,6 +32,7 @@ function Navbar() {
         {!unauthorized ? (
           <div className="navbar-links">
             <Link to="/watchlist">Watchlist</Link>
+            <Link to="/stockdiary">Stock Diary</Link>
             <Link to="/profile">Profile</Link>
           </div>
         ) : (

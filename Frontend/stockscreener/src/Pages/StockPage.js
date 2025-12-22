@@ -49,7 +49,7 @@ ChartJS.register(
 function StockPage() {
   const { ticker } = useParams();
   const navigate = useNavigate();
-  console.log("ticker is ", ticker);
+  // console.log("ticker is ", ticker);
   const [isLoading, setIsLoading] = useState(false);
   const [hist_data, setHist_data] = useState([]);
   const [yst_data, setYst_data] = useState({});
@@ -72,20 +72,18 @@ function StockPage() {
   const RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
   const MAX_CLICKS_PER_WINDOW = 5; // Maximum 5 clicks per minute
 
-  // Helper function to check if user exceeded rate limit
   const isRateLimited = () => {
     const now = Date.now();
     const timeSinceLastClick = now - lastClickTime;
 
     if (timeSinceLastClick > RATE_LIMIT_WINDOW) {
-      // Reset counter if window has passed
       setClickCount(1);
       setLastClickTime(now);
       return false;
     }
 
     if (clickCount >= MAX_CLICKS_PER_WINDOW) {
-      return true; // Rate limited
+      return true; 
     }
 
     setClickCount(clickCount + 1);
@@ -112,16 +110,16 @@ function StockPage() {
     try {
       const userString = localStorage.getItem("user");
       const token = localStorage.getItem("token");
-      console.log(
-        "inside fetchiswishlist ticker is ",
-        ticker,
-        "user id is ",
-        userString,
-        " token is ",
-        token
-      );
+      // console.log(
+      //   "inside fetchiswishlist ticker is ",
+      //   ticker,
+      //   "user id is ",
+      //   userString,
+      //   " token is ",
+      //   token
+      // );
       if (!userString || !token) {
-        console.log("User not logged in");
+        // console.log("User not logged in");
         setUnauthorized(true);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -171,9 +169,13 @@ function StockPage() {
   useEffect(() => {
     fetchIsWishlisted(ticker);
     setIsLoading(true);
-    console.log("url is ", httpUrl);
+    const url = `${process.env.REACT_APP_PYTHON_HISTORICAL_DATA_URL.replace(
+        "{ticker}",
+        ticker
+      )}?period=6mo&interval=1d`;
+    console.log("url is ", url);
     axios
-      .get(httpUrl)
+      .get(url)
       .then((response) => {
         console.log("historical data response is ", response.data);
         setName(response.data.name);
@@ -314,7 +316,7 @@ function StockPage() {
       "{ticker}",
       ticker
     )}?period=${period}&interval=${interval}`;
-    console.log("url is ", newUrl);
+    // console.log("url is ", newUrl);
     setHttpUrl(newUrl);
   };
 
@@ -385,7 +387,6 @@ function StockPage() {
             onClick={() => {
               if (isBookmarkLoading) return;
 
-              // Check rate limit before processing
               if (!isBookmarked && isRateLimited()) {
                 alert(
                   "Too many requests. Please wait a moment before trying again."
@@ -396,6 +397,7 @@ function StockPage() {
               if (isBookmarked) {
                 handleRemoveFromWatchlist(ticker);
               } else {
+                if (hist_data.length < 2) return;
                 const change = Number(
                   (hist_data[0].price - hist_data[1].price).toFixed(2)
                 );

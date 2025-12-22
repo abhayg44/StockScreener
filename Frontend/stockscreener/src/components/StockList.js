@@ -19,9 +19,9 @@ function StockList() {
   const [loading, setLoading] = React.useState(false);
 
   const token = localStorage.getItem("token");
-  console.log("token is available ", token);
+  // console.log("token is available ", token);
   const nodeStockURL = process.env.REACT_APP_NODE_STOCK_SERVICE_URL;
-  console.log("url for stock service is ", nodeStockURL);
+  // console.log("url for stock service is ", nodeStockURL);
 
   const getStockData = async (token) => {
     setLoading(true);
@@ -32,12 +32,12 @@ function StockList() {
         },
       });
       setRes(res);
-      console.log("total data is ", JSON.stringify(res.data[0]));
+      // console.log("total data is ", JSON.stringify(res.data[0]));
       setma50_data([
         ...res.data["ma50"]["bullish"],
         ...res.data["ma50"]["bearish"],
       ]);
-      console.log("data is ", ma50_data);
+      // console.log("data is ", ma50_data);
       setrsi_data([
         ...res.data["rsi"]["bullish"],
         ...res.data["rsi"]["bearish"],
@@ -62,7 +62,7 @@ function StockList() {
         }
       );
       setlast_updated(readable_time);
-      console.log("last updated is ", last_updated);
+      // console.log("last updated is ", last_updated);
     } catch (err) {
       if (err.response && err.response.status === 401) {
         setUnauthorized(true);
@@ -82,7 +82,7 @@ function StockList() {
         },
       });
       setRes(res);
-      console.log("Refresh response data is ", JSON.stringify(res.data));
+      // console.log("Refresh response data is ", JSON.stringify(res.data));
       setma50_data([
         ...res.data["ma50"]["bullish"],
         ...res.data["ma50"]["bearish"],
@@ -130,7 +130,7 @@ function StockList() {
     }
   }, [token]);
 
-  console.log("unauthorized is ", unauthorized);
+  // console.log("unauthorized is ", unauthorized);
   if (unauthorized) {
     return (
       <div className="unauthorized-overlay">

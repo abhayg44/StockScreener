@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Atom } from "react-loading-indicators";
 import "./RegisterPage.css";
 
 function RegisterPage(props) {
@@ -10,6 +11,7 @@ function RegisterPage(props) {
   const [isSignup, setIsSignup] = useState(false);
   const [name, setName] = useState("");
   const [unauthorized, setUnauthorized] = useState(true);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const loginURL = process.env.REACT_APP_NODE_LOGIN_URL;
@@ -19,6 +21,9 @@ function RegisterPage(props) {
     e.preventDefault();
     setError("");
     try {
+      setLoading(true);
+      // console.log("login url is ", loginURL);
+      // console.log("email is ", email, " password is ", password);
       const res = await axios.post(loginURL, {
         email,
         password,
@@ -27,10 +32,12 @@ function RegisterPage(props) {
       localStorage.setItem("user", JSON.stringify(res.data.user));
       props.setUser(res.data.user);
       setUnauthorized(false);
+      setLoading(false);
       navigate("/", { state: { unauthorized: false } });
     } catch (err) {
       console.log(err.response);
       setError(err.response.data.message || err.message);
+      setLoading(false);
     }
   };
 
@@ -38,6 +45,9 @@ function RegisterPage(props) {
     e.preventDefault();
     setError("");
     try {
+      setLoading(true);
+      // console.log("signup url is ", signupURL);
+      // console.log("name is ", name, " email is ", email, " password
       const res = await axios.post(signupURL, {
         name: name,
         email: email,
@@ -47,14 +57,21 @@ function RegisterPage(props) {
       localStorage.setItem("user", JSON.stringify(res.data.user));
       props.setUser(res.data.user);
       setUnauthorized(false);
+      setLoading(false);
       navigate("/", { state: { unauthorized: false } });
     } catch (err) {
       setError(err.response.data.message || err.message);
+      setLoading(false);
     }
   };
 
   return (
     <div>
+      {loading && (
+        <div className="loading-overlay">
+          <Atom color="#2d35ccff" size="medium" text="" textColor="" />
+        </div>
+      )}
       <div className="login-container">
         <div>
           <h2>{isSignup ? "Sign Up" : "Login"}</h2>
