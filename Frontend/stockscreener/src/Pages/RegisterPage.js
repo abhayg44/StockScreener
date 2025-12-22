@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { OrbitProgress } from "react-loading-indicators";
+import { Atom } from "react-loading-indicators";
 import "./RegisterPage.css";
 
 function RegisterPage(props) {
@@ -69,7 +69,7 @@ function RegisterPage(props) {
     <div>
       {loading && (
         <div className="loading-overlay">
-          <OrbitProgress color="#2d35ccff" size="medium" text="" textColor="" />;
+          <Atom color="#2d35ccff" size="medium" text="" textColor="" />
         </div>
       )}
       <div className="login-container">

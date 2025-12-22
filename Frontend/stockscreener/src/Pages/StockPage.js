@@ -119,7 +119,7 @@ function StockPage() {
       //   token
       // );
       if (!userString || !token) {
-        console.log("User not logged in");
+        // console.log("User not logged in");
         setUnauthorized(true);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -316,7 +316,7 @@ function StockPage() {
       "{ticker}",
       ticker
     )}?period=${period}&interval=${interval}`;
-    console.log("url is ", newUrl);
+    // console.log("url is ", newUrl);
     setHttpUrl(newUrl);
   };
 
