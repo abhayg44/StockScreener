@@ -2,9 +2,9 @@ const { response } = require("express");
 
 const getWishlistData = async (req, res) => {
   try {
-    console.log("Fetching wishlist data...");
+    // console.log("Fetching wishlist data...");
     const userId = req.query.user_id;
-    console.log("query is ", req.query.user_id);
+    // console.log("query is ", req.query.user_id);
     if (!userId) {
       return res.status(400).json({
         message: "Bad Request",
@@ -13,8 +13,8 @@ const getWishlistData = async (req, res) => {
         error: "No user id given",
       });
     }
-    console.log("User ID from token: ", req.user.userId);
-    console.log("User ID from query: ", userId);
+    // console.log("User ID from token: ", req.user.userId);
+    // console.log("User ID from query: ", userId);
     if (String(req.user.userId) != String(userId)) {
       console.log("user id mismatch detected");
       return res.status(403).json({
@@ -24,7 +24,7 @@ const getWishlistData = async (req, res) => {
         error: "user id and token mismatch",
       });
     }
-    console.log("url is ", process.env.GO_BACKEND_URL + `/stock/wishlist`);
+    // console.log("url is ", process.env.GO_BACKEND_URL + `/stock/wishlist`);
     const data = await fetch(
       process.env.GO_BACKEND_URL + `/stock/wishlist?user_id=${userId}`,
       {
@@ -35,8 +35,8 @@ const getWishlistData = async (req, res) => {
       }
     );
     const wishlistData = await data.json();
-    console.log("Wishlistdata is ", wishlistData);
-    console.log("Status code is ", wishlistData.statusCode);
+    // console.log("Wishlistdata is ", wishlistData);
+    // console.log("Status code is ", wishlistData.statusCode);
 
     if (wishlistData.statusCode !== 200) {
       console.log("Error response:", wishlistData.error);
@@ -65,7 +65,7 @@ const getWishlistData = async (req, res) => {
 
 const getIsWishlistData = async (req, res) => {
   try {
-    console.log("Fetching iswishlist data...");
+    // console.log("Fetching iswishlist data...");
     const userId = req.query.user_id;
     const ticker = req.query.ticker;
     if (!userId || !ticker) {
@@ -76,7 +76,7 @@ const getIsWishlistData = async (req, res) => {
         data: null,
       });
     }
-    console.log("user id and user_id are ", req.user.userId, userId);
+    // console.log("user id and user_id are ", req.user.userId, userId);
     if (String(req.user.userId) != String(userId)) {
       return res.status(403).json({
         message: "Forbidden",
@@ -103,7 +103,7 @@ const getIsWishlistData = async (req, res) => {
         error: data.error,
       });
     }
-    console.log("iswishlist data is ", data.data);
+    // console.log("iswishlist data is ", data.data);
     if (data.data["is_wishlisted"] == false) {
       return res.status(200).json({
         message: "not wishlisted",
@@ -126,16 +126,16 @@ const getIsWishlistData = async (req, res) => {
 
 const sendWishlistData = async (req, res) => {
   try {
-    console.log("Storing wishlist data...");
+    // console.log("Storing wishlist data...");
     const userId = req.query.user_id;
     const wishlist = req.body;
-    console.log("request body is ", req.body);
-    console.log("wishlist data is ", JSON.stringify(wishlist));
-    console.log("type of change is ", typeof wishlist["change"]);
-    console.log(
-      "complete url ",
-      process.env.GO_BACKEND_URL + `/stock/wishlist?user_id=${userId}`
-    );
+    // console.log("request body is ", req.body);
+    // console.log("wishlist data is ", JSON.stringify(wishlist));
+    // console.log("type of change is ", typeof wishlist["change"]);
+    // console.log(
+    //   "complete url ",
+    //   process.env.GO_BACKEND_URL + `/stock/wishlist?user_id=${userId}`
+    // );
     if (!userId || !wishlist) {
       return res.status(400).json({
         message: "Bad Request",
@@ -163,7 +163,7 @@ const sendWishlistData = async (req, res) => {
       }
     );
     const data = await response.json();
-    console.log("Response from Go backend:", data);
+    // console.log("Response from Go backend:", data);
     if (data.statusCode == 200 || data.statusCode == 201) {
       return res.status(200).json({
         message: "Wishlist data stored successfully from node server",
@@ -195,7 +195,7 @@ const sendWishlistData = async (req, res) => {
 
 const deleteWishlistData = async (req, res) => {
   try {
-    console.log("Deleting wishlist data...");
+    // console.log("Deleting wishlist data...");
     const userId = req.query.user_id;
     const ticker = req.query.ticker;
     if (!userId || !ticker) {
@@ -206,7 +206,7 @@ const deleteWishlistData = async (req, res) => {
         data: null,
       });
     }
-    console.log("user id and user_id are ", req.user.userId, userId);
+    // console.log("user id and user_id are ", req.user.userId, userId);
     if (String(req.user.userId) != String(userId)) {
       return res.status(403).json({
         message: "Forbidden",

@@ -49,7 +49,7 @@ ChartJS.register(
 function StockPage() {
   const { ticker } = useParams();
   const navigate = useNavigate();
-  // console.log("ticker is ", ticker);
+  console.log("ticker is ", ticker);
   const [isLoading, setIsLoading] = useState(false);
   const [hist_data, setHist_data] = useState([]);
   const [yst_data, setYst_data] = useState({});
@@ -69,6 +69,8 @@ function StockPage() {
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
   const [lastClickTime, setLastClickTime] = useState(0);
   const [clickCount, setClickCount] = useState(0);
+  const [activeBtn,setActiveBtn]=useState("6M")
+  const buttons=["1Y","6M",,"3M","1M","5D"]
   const RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
   const MAX_CLICKS_PER_WINDOW = 5; // Maximum 5 clicks per minute
 
@@ -110,16 +112,16 @@ function StockPage() {
     try {
       const userString = localStorage.getItem("user");
       const token = localStorage.getItem("token");
-      // console.log(
-      //   "inside fetchiswishlist ticker is ",
-      //   ticker,
-      //   "user id is ",
-      //   userString,
-      //   " token is ",
-      //   token
-      // );
+      console.log(
+        "inside fetchiswishlist ticker is ",
+        ticker,
+        "user id is ",
+        userString,
+        " token is ",
+        token
+      );
       if (!userString || !token) {
-        // console.log("User not logged in");
+        console.log("User not logged in");
         setUnauthorized(true);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -166,16 +168,10 @@ function StockPage() {
     }
   };
 
-  useEffect(() => {
-    fetchIsWishlisted(ticker);
-    setIsLoading(true);
-    const url = `${process.env.REACT_APP_PYTHON_HISTORICAL_DATA_URL.replace(
-        "{ticker}",
-        ticker
-      )}?period=6mo&interval=1d`;
-    console.log("url is ", url);
+  const fetchStockData=()=>{
+    console.log("url is ", httpUrl);
     axios
-      .get(url)
+      .get(httpUrl)
       .then((response) => {
         console.log("historical data response is ", response.data);
         setName(response.data.name);
@@ -197,6 +193,12 @@ function StockPage() {
         console.log(error.response, error.message, error.code);
         setIsLoading(false);
       });
+  }
+
+  useEffect(() => {
+    fetchIsWishlisted(ticker);
+    setIsLoading(true);
+    fetchStockData()
   }, [httpUrl]);
 
   const getBarData = (dataArr, label) => {
@@ -298,7 +300,7 @@ function StockPage() {
     let interval = "1d";
     if (timeFrame === "1Y") {
       period = "1y";
-      interval = "1wk";
+      interval = "1wk";  
     } else if (timeFrame === "6M") {
       period = "6mo";
       interval = "1d";
@@ -316,7 +318,7 @@ function StockPage() {
       "{ticker}",
       ticker
     )}?period=${period}&interval=${interval}`;
-    // console.log("url is ", newUrl);
+    console.log("url is ", newUrl);
     setHttpUrl(newUrl);
   };
 
@@ -372,11 +374,16 @@ function StockPage() {
     <div className="stock-page-container">
       <div className="header-controls">
         <div className="timeframe-buttons">
-          <button onClick={() => handleTimeFrameChange("1Y")}>1 Year</button>
-          <button onClick={() => handleTimeFrameChange("6M")}>6 Month</button>
-          <button onClick={() => handleTimeFrameChange("3M")}>3 Month</button>
-          <button onClick={() => handleTimeFrameChange("1M")}>1 Month</button>
-          <button onClick={() => handleTimeFrameChange("5D")}>5 Day</button>
+          {buttons.map((btn)=>(
+          <button 
+            key={btn}          
+            onClick={() => {
+            handleTimeFrameChange(btn)
+            setActiveBtn(btn)
+          }}
+          className={activeBtn===btn? "active":""}          
+          >{btn}</button>
+          ))}
         </div>
         <div className="bookmark-container">
           Save to Watchlist

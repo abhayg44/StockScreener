@@ -8,7 +8,9 @@ mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    dbName: "stock", // explicitly select the DB
+    dbName: "stock", 
+    maxPoolSize:5,
+    serverSelectionTimeoutMS: 5000,
   })
   .then(() => {
     // console.log("Connected to MongoDB");
@@ -16,5 +18,7 @@ mongoose
   .catch((err) => {
     console.error("Error connecting to MongoDB", err);
   });
+
+
 
 module.exports = mongoose;

@@ -2,10 +2,10 @@ const express = require("express");
 
 const FetchAllStockDiary = async (req, res) => {
   try {
-    console.log(
-      "Inside fetch all stock diary controller",
-      process.env.GO_BACKEND_URL + `/stockdiary?user_id=${req.user.userId}`
-    );
+    // console.log(
+    //   "Inside fetch all stock diary controller",
+    //   process.env.GO_BACKEND_URL + `/stockdiary?user_id=${req.user.userId}`
+    // );
     if (!req.user || !req.user.userId) {
       return res.status(401).json({
         message: "Unauthorized: No user ID found",
@@ -24,7 +24,7 @@ const FetchAllStockDiary = async (req, res) => {
       }
     );
     const stockDiaryData = await data.json();
-    console.log("stock diary data from golang side is ", stockDiaryData);
+    // console.log("stock diary data from golang side is ", stockDiaryData);
     if (stockDiaryData.statusCode !== 200) {
       return res.status(stockDiaryData.statusCode).json({
         message: `Failed to fetch wishlist data in golang side`,
@@ -54,8 +54,8 @@ const FetchStockDiaryPagination = async (req, res) => {
   try {
     page = req.query.page;
     limit = req.query.limit;
-    console.log("page is ", page);
-    console.log("limit is ", limit);
+    // console.log("page is ", page);
+    // console.log("limit is ", limit);
     const data = await fetch(
       process.env.GO_BACKEND_URL +
         `/stockdiary?user_id=${req.user.userId}&page=${page}&limit=${limit}`,
@@ -67,7 +67,7 @@ const FetchStockDiaryPagination = async (req, res) => {
       }
     );
     const stockDiaryData = await data.json();
-    console.log("stock diary data from golang side is ", stockDiaryData);
+    // console.log("stock diary data from golang side is ", stockDiaryData);
     if (stockDiaryData.statusCode !== 200) {
       return res.status(stockDiaryData.statusCode).json({
         message: `Failed to fetch wishlist data in golang side`,
@@ -106,7 +106,7 @@ const FetchParticularStockDiaryEntry = async (req, res) => {
       }
     );
     const stockDiaryData = await response.json();
-    console.log("stock diary data from golang side is ", stockDiaryData);
+    // console.log("stock diary data from golang side is ", stockDiaryData);
     if (stockDiaryData.statusCode !== 200) {
       return res.status(stockDiaryData.statusCode).json({
         message: `Failed to fetch wishlist data in golang side`,
@@ -134,10 +134,10 @@ const FetchParticularStockDiaryEntry = async (req, res) => {
 
 const CreateStockDiaryEntry = async (req, res) => {
   try {
-    console.log(
-      "inside create block go url ",
-      process.env.GO_BACKEND_URL + "/stockdiary"
-    );
+    // console.log(
+    //   "inside create block go url ",
+    //   process.env.GO_BACKEND_URL + "/stockdiary"
+    // );
     if (!req.user || !req.user.userId) {
       return res.status(401).json({
         message: "Unauthorized: No user ID found",
@@ -173,7 +173,7 @@ const CreateStockDiaryEntry = async (req, res) => {
       created_at: now,
       updated_at: now,
     };
-    console.log("body is ", nodeBody);
+    // console.log("body is ", nodeBody);
     const response = await fetch(process.env.GO_BACKEND_URL + "/stockdiary", {
       method: "POST",
       headers: {
@@ -193,10 +193,10 @@ const CreateStockDiaryEntry = async (req, res) => {
     }
     console.log("data of body is ", req.body);
     const data = await response.json();
-    console.log(
-      "data from golang side after creating stock diary entry ",
-      data
-    );
+    // console.log(
+    //   "data from golang side after creating stock diary entry ",
+    //   data
+    // );
     res.status(200).json({
       message: data.message,
       status: 200,
@@ -204,7 +204,7 @@ const CreateStockDiaryEntry = async (req, res) => {
       error: null,
     });
   } catch (err) {
-    console.log("error in creating stock diary entry ", err);
+    // console.log("error in creating stock diary entry ", err);
     return res.status(500).json({
       message: `error in node ${err}`,
       status: 500,
@@ -227,7 +227,7 @@ const EditStockDiaryEntry = async (req, res) => {
     const body = req.body;
     const now = new Date();
     body.updated_at = now;
-    console.log("body is ", body);
+    // console.log("body is ", body);
     const response = await fetch(
       process.env.GO_BACKEND_URL +
         `/stockdiary/${req.params.id}?user_id=${req.user.userId}`,
@@ -259,7 +259,7 @@ const EditStockDiaryEntry = async (req, res) => {
       });
     }
     const data = await response.json();
-    console.log("data from golang side after editing stock diary entry ", data);
+    // console.log("data from golang side after editing stock diary entry ", data);
     res.status(200).json({
       message: data.message,
       status: 200,

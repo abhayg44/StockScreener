@@ -119,6 +119,12 @@ button {
   z-index: 1000;
 }
 
+.timeframe-buttons button.active {
+  background-color: #0d1047;
+  color: #fff;
+  border-color: #0d1047;
+}
+
 button:hover {
   background-color: #1f26a1;
 }
