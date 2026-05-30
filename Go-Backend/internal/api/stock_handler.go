@@ -15,34 +15,27 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
 var Cur_Stock_Data models.StockData
 var wg sync.WaitGroup
 var MongoURL = configs.GetConfig().MongoURL
 
+func RefreshCurrentStockDataJob() (models.StockData, error) {
+	curTime, err := services.PublishStockScreenerJob()
+	if err != nil {
+		return models.StockData{}, fmt.Errorf("failed to publish stock screener job: %w", err)
+	}
+	fmt.Println("Published run job to RabbitMQ at", curTime)
 
-func RefreshCurrentStockDataJob() (models.StockData,error){
-	wg.Add(1)
-	go func ()  {
-		defer wg.Done()
-		err := services.PublishStockScreenerJob()
-		if err != nil {
-			fmt.Errorf("failed to run stock screener service: %w", err)
-		}
-	}()
-	wg.Wait()
-	fmt.Println("Published run job to RabbitMQ")
-	Cur_Stock_Data, err := services.GetStockFromRabbitmq()
+	// Wait for fresh stock data from RabbitMQ
+	Cur_Stock_Data, err := services.GetStockFromRabbitmq(curTime)
 	if err != nil {
 		return models.StockData{}, fmt.Errorf("failed to get stock data from RabbitMQ: %w", err)
 	}
 	fmt.Println("Received stock data from RabbitMQ: ", Cur_Stock_Data)
-	StoreDataInMongo("stock","stock_data",bson.M{"type":"latest"},Cur_Stock_Data)
+	StoreDataInMongo("stock", "stock_data", bson.M{"type": "latest"}, Cur_Stock_Data)
 	fmt.Println("Stored stock data in MongoDB")
 	return Cur_Stock_Data, nil
 }
-
-
 
 func RefreshCurrentStockData(w http.ResponseWriter, r *http.Request) {
 	Cur_Stock_Data, err := RefreshCurrentStockDataJob()
@@ -58,31 +51,31 @@ func RefreshCurrentStockData(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func StoreDataInMongo(databaseName,collectionName string,filter interface{},data interface{}) error {
+func StoreDataInMongo(databaseName, collectionName string, filter interface{}, data interface{}) error {
 	services.InitMongo(MongoURL)
 	collection := services.GetMongoCollection(databaseName, collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	
-	_,err:=collection.InsertOne(ctx,data)
-	if err!=nil{
+
+	_, err := collection.InsertOne(ctx, data)
+	if err != nil {
 		return fmt.Errorf("failed to insert stock data: %w", err)
 	}
 	print("Inserted stock data into MongoDB")
-	opts:=options.Find().SetSort(bson.D{{Key:"last_updated",Value:-1}})
-	cursor,err:=collection.Find(ctx,bson.D{},opts)
-	if err!=nil{
+	opts := options.Find().SetSort(bson.D{{Key: "last_updated", Value: -1}})
+	cursor, err := collection.Find(ctx, bson.D{}, opts)
+	if err != nil {
 		return fmt.Errorf("failed to find stock data: %w", err)
 	}
 	defer cursor.Close(ctx)
 	var docs []bson.M
-	if err = cursor.All(ctx,&docs); err!=nil{
+	if err = cursor.All(ctx, &docs); err != nil {
 		return fmt.Errorf("failed to decode stock data: %w", err)
 	}
-	print("Found stock data: ",docs)
-	if len(docs)>4{
+	print("Found stock data: ", docs)
+	if len(docs) > 4 {
 		var idsToKeep []interface{}
-		for i:=0;i<4;i++{
+		for i := 0; i < 4; i++ {
 			idsToKeep = append(idsToKeep, docs[i]["_id"])
 		}
 		_, err = collection.DeleteMany(ctx, bson.M{"_id": bson.M{"$nin": idsToKeep}})

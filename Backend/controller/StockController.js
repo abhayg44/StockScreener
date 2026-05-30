@@ -14,19 +14,29 @@ const getStockData = async (req, res) => {
 
 const refreshStockData = async (req, res) => {
   try {
-    // console.log("Refreshing stock data...");
-    const goRes = await fetch(
-      process.env.GO_BACKEND_URL + "/stock/refresh-stock-data",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const goBackendUrl = process.env.GO_BACKEND_URL;
+    if (!goBackendUrl) {
+      console.error("GO_BACKEND_URL environment variable is not set");
+      return res.status(500).json({
+        message: "Server configuration error: GO_BACKEND_URL not set",
+      });
+    }
+
+    const url = goBackendUrl + "/stock/refresh-stock-data";
+    console.log("Making request to:", url);
+    
+    const goRes = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
     const data = await goRes.json();
-    // console.log("Data from GO backend is ", data);
+    console.log("Data from GO backend is", data);
+    
     if (goRes.status !== 200) {
+      console.error("GO backend returned status:", goRes.status);
       return res.status(500).json({
         message: "Failed to refresh stock data please try again later",
       });

@@ -81,8 +81,9 @@ function StockList() {
           Authorization: `Bearer ${token}`,
         },
       });
+      console.log("Refresh response data is ", JSON.stringify(res.data));
+      // Update all state at once to force React to re-render
       setRes(res);
-      // console.log("Refresh response data is ", JSON.stringify(res.data));
       setma50_data([
         ...res.data["ma50"]["bullish"],
         ...res.data["ma50"]["bearish"],
@@ -111,7 +112,9 @@ function StockList() {
         }
       );
       setlast_updated(readable_time);
+      console.log("State updated with new data. Last updated:", readable_time);
     } catch (err) {
+      console.error("Refresh error:", err);
       if (err.response && err.response.status === 401) {
         setUnauthorized(true);
         localStorage.removeItem("token");

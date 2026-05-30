@@ -8,45 +8,64 @@ import numpy as np
 from Screener.strategies import ma50_score_calculator, rsi_score_momentum, volume_score, final_screener
 
 def fetch_data():
-  print("this is complete run -----------------------------------------")
-  url = "https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv"
+  try:
+    print("this is complete run -----------------------------------------")
+    url = "https://nsearchives.nseindia.com/content/indices/ind_nifty50list.csv"
 
-  headers = {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Connection": "keep-alive"
-  }
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Connection": "keep-alive"
+    }
 
-  resp = requests.get(url, headers=headers, timeout=20)  #get the data from the URL
-  resp.raise_for_status()
+    print("Fetching NSE Nifty 50 list...")
+    resp = requests.get(url, headers=headers, timeout=20)  #get the data from the URL
+    resp.raise_for_status()
+    print("Successfully fetched NSE list")
 
-  df = pd.read_csv(StringIO(resp.text))  #convert the string values to CSV 
-  company_names = df[['Company Name','Symbol']]
-  
-  mask_dummy=company_names['Symbol'].str.contains('DUMMY',case=False)
-  if mask_dummy.any():
-    skipped=company_names[mask_dummy]
-    print("Skipping DUMMY entries: ",skipped)
-    company_names=company_names[~mask_dummy]
-  
-  yf_tickers = company_names['Symbol'].apply(lambda x: x + ".NS").tolist()  
+    df = pd.read_csv(StringIO(resp.text))  #convert the string values to CSV 
+    company_names = df[['Company Name','Symbol']]
+    
+    mask_dummy=company_names['Symbol'].str.contains('DUMMY',case=False)
+    if mask_dummy.any():
+      skipped=company_names[mask_dummy]
+      print("Skipping DUMMY entries: ",skipped)
+      company_names=company_names[~mask_dummy]
+    
+    yf_tickers = company_names['Symbol'].apply(lambda x: x + ".NS").tolist()
+    print(f"Total tickers to download: {len(yf_tickers)}")
 
-  start_date=datetime.now() - timedelta(days=365)
-  end_date=datetime.now()
+    start_date=datetime.now() - timedelta(days=365)
+    end_date=datetime.now()
 
-  data=yf.download(yf_tickers, start=start_date, end=end_date, group_by="ticker")  #download the historical data for the tickers
-  if data is None or data.empty:
-      print(f"safe_download: failed for {ticker}: {e}")
-      return None
-  print("data is --------------------------------------",data,"\n",yf_tickers,"\n",company_names)
-  return data, yf_tickers, company_names
+    print(f"Downloading stock data for {len(yf_tickers)} tickers from {start_date.date()} to {end_date.date()}...")
+    data=yf.download(yf_tickers, start=start_date, end=end_date, group_by="ticker")  #download the historical data for the tickers
+    
+    if data is None or data.empty:
+        print("Failed to download stock data - data is empty")
+        return None
+    
+    print(f"Successfully downloaded data with shape: {data.shape}")
+    print("data is --------------------------------------",data,"\n",yf_tickers,"\n",company_names)
+    return data, yf_tickers, company_names
+    
+  except Exception as e:
+    print(f"Error in fetch_data: {type(e).__name__}: {str(e)}")
+    import traceback
+    traceback.print_exc()
+    return None
 
 def company_ticker_to_name(yf_tickers,company_names):
   return {ticker: company_names[company_names['Symbol']==ticker.replace('.NS','')]['Company Name'].values[0] for ticker in yf_tickers}
 
 def all_strategy_run():
-  data, yf_tickers, company_names = fetch_data()
+  result = fetch_data()
+  if result is None:
+    print("Error: Failed to fetch data from yfinance")
+    return None
+  
+  data, yf_tickers, company_names = result
 
   #names of the companies
   company_name_dict = company_ticker_to_name(yf_tickers, company_names)
@@ -127,5 +146,8 @@ def all_strategy_run():
 
 def executing_all_strategy_run():
   print("this is all strategy run -----------------------------------------")
-  data=all_strategy_run()
+  data = all_strategy_run()
+  if data is None:
+    print("Error: Strategy run failed")
+    return None
   return data
