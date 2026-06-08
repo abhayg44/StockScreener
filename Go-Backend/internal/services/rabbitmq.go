@@ -49,6 +49,7 @@ func PublishStockScreenerJob() (time.Time, error) {
 		amqp.Publishing{
 			ContentType: "text/plain",
 			Body:        []byte("run"),
+			Timestamp:   time.Now(),
 		},
 	)
 	comms.FailOnError(err, "Failed to publish a message")

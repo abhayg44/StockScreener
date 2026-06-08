@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/STOCKSCREENER/Go-Backend/internal/configs"
@@ -16,7 +15,6 @@ import (
 )
 
 var Cur_Stock_Data models.StockData
-var wg sync.WaitGroup
 var MongoURL = configs.GetConfig().MongoURL
 
 func RefreshCurrentStockDataJob() (models.StockData, error) {

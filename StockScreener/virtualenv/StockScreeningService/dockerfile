@@ -28,6 +28,8 @@ COPY .env .env
 
 COPY . .
 
+# Declare PYTHONPATH as a build-time arg so expanders like linters won't flag it as undefined
+ARG PYTHONPATH=""
 ENV PYTHONPATH="${PYTHONPATH}:/app"
 ENV FLASK_APP=main.py
 

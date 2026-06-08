@@ -43,18 +43,58 @@ def ma50_score_calculator(data,ma_period=14,ma_short=50,ma_long=200):
 def rsi_score_momentum(data,rsi_period=14,lookback=20):
   close_data=data["Close"].dropna().tail(rsi_period*4)
   rsi_series=ta.RSI(close_data,timeperiod=rsi_period)
+  # compute change and guard against empty or too-short series
   rsi_change=rsi_series.diff()
-  cur_change=rsi_change.iloc[-1]
-  stdev=rsi_change.rolling(lookback).std().iloc[-1]
-  if  pd.isna(stdev) or stdev==0:
-    return 0.0
+  rsi_change_nonnull = rsi_change.dropna()
+
+  # prepare fallback return shape
+  close_val = round(float(close_data.iloc[-1]),2) if len(close_data) > 0 else None
+  change_val = round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None
+  pct_change_val = round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None
+
+  if len(rsi_change_nonnull) == 0:
+    return {
+      "final_rsi_score": 0.0,
+      "close": close_val,
+      "change": change_val,
+      "pct_change": pct_change_val,
+    }
+
+  try:
+    cur_change = rsi_change_nonnull.iloc[-1]
+  except Exception:
+    return {
+      "final_rsi_score": 0.0,
+      "close": close_val,
+      "change": change_val,
+      "pct_change": pct_change_val,
+    }
+
+  stdev_series = rsi_change_nonnull.rolling(lookback).std().dropna()
+  if len(stdev_series) == 0:
+    return {
+      "final_rsi_score": 0.0,
+      "close": close_val,
+      "change": change_val,
+      "pct_change": pct_change_val,
+    }
+
+  stdev = stdev_series.iloc[-1]
+  if pd.isna(stdev) or stdev == 0:
+    return {
+      "final_rsi_score": 0.0,
+      "close": close_val,
+      "change": change_val,
+      "pct_change": pct_change_val,
+    }
+
   score=cur_change/(2*stdev)
   final_rsi_score=float(round(max(-1,min(1,score)),3))
   final_rsi_data={
     "final_rsi_score":final_rsi_score,
-    "close":round(float(close_data.iloc[-1]),2),
-    "change":round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None,
-    "pct_change":round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None
+    "close":close_val,
+    "change":change_val,
+    "pct_change":pct_change_val
   }
   return final_rsi_data
 
@@ -63,8 +103,18 @@ def volume_score(data,lookback=20,slope_lookback=5):
   volume_data=data["Volume"].dropna()
   close_data=data["Close"].dropna()
   volume_series=ta.OBV(close_data,volume_data)
+  # prepare fallback return shape
+  close_val = round(float(close_data.iloc[-1]),2) if len(close_data) > 0 else None
+  change_val = round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None
+  pct_change_val = round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None
+
   if len(volume_series.dropna()) < lookback:
-    return 0.0
+    return {
+      "final_volume_score": 0.0,
+      "close": close_val,
+      "change": change_val,
+      "pct_change": pct_change_val,
+    }
   #current obv
   obv_recent=(volume_series[-slope_lookback:].dropna().to_numpy())
   coeffs=np.polyfit(range(len(obv_recent)),obv_recent,1)
@@ -76,14 +126,19 @@ def volume_score(data,lookback=20,slope_lookback=5):
   avg_slope=avg_coeff[0]
   
   if avg_slope==0:
-    return 0.0
+    return {
+      "final_volume_score": 0.0,
+      "close": close_val,
+      "change": change_val,
+      "pct_change": pct_change_val,
+    }
   score=cur_slope/avg_slope
   final_volume_score=float(round(max(-1,min(1,score)),3))
   final_volume_data={
     "final_volume_score":final_volume_score,
-    "close":round(float(close_data.iloc[-1]),2),
-    "change":round(float(close_data.iloc[-1]-close_data.iloc[-2]),2) if len(close_data) > 1 else None,
-    "pct_change":round(float((close_data.iloc[-1]-close_data.iloc[-2])/close_data.iloc[-2]*100),2) if len(close_data) > 1 else None
+    "close":close_val,
+    "change":change_val,
+    "pct_change":pct_change_val
   }
   return final_volume_data
 
